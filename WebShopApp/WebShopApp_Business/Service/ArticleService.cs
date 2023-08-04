@@ -1,0 +1,43 @@
+﻿using AutoMapper;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using WebShopApp_Data;
+using WebShopApp_Data.Models;
+
+namespace WebShopApp_Business.Service
+{
+    public class ArticleService : IArticleService
+    {
+        private readonly IArticleRepository _articleRepository;
+        private readonly IMapper _mapper;
+
+        public ArticleService(IArticleRepository articleRepository, IMapper mapper)
+        {
+            _articleRepository = articleRepository;
+            _mapper = mapper;
+        }
+
+        public Article Create(Article article)
+        {
+            return _articleRepository.Insert(article);
+        }
+
+        public IEnumerable<Article> GetAll()
+        {
+            return _articleRepository.GetAll();
+        }
+
+        public Article GetById(int id)
+        {
+            return _articleRepository.GetById(id);
+        }
+
+        public void Delete(int id)
+        {
+            _articleRepository.Delete(GetById(id));
+        }
+    }
+}
