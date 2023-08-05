@@ -11,14 +11,17 @@ namespace WebShopApp_Business.Service
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IArticleRepository _articleRepository;
 
-        public OrderService(IOrderRepository orderRepository)
+        public OrderService(IOrderRepository orderRepository, IArticleRepository articleRepository)
         {
             _orderRepository = orderRepository;
+            _articleRepository = articleRepository;
         }
 
         public Order Create(Order order)
         {
+            UpdateArticleAmount(order);
             return _orderRepository.Insert(order);
         }
 
@@ -36,6 +39,16 @@ namespace WebShopApp_Business.Service
         {
             //if (_orderRepository.GetById(id) == null) return null;
             return _orderRepository.Update(order);
+        }
+
+        private void UpdateArticleAmount(Order order) 
+        {
+            foreach(var orderArticle in order.Articles) 
+            {
+                Article article = _articleRepository.GetById(orderArticle.OriginalArticleId);
+                article.Quantity -= orderArticle.Quantity;
+                _articleRepository.Update(article);
+            }
         }
     }
 }

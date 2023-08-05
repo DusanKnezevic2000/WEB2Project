@@ -5,11 +5,21 @@ import Articles from "../Articles";
 import { AiFillDelete } from "react-icons/ai";
 import { BsFillCartFill } from "react-icons/bs";
 import articleHttpService from "../../services/article-http-service";
+import Order from "../../model/Order";
+import orderService from "../../services/order-service";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const NewOrder = () => {
+  const navigate = useNavigate();
   let [cart, setCart] = useState<ArticleDTO[]>([]);
   let [articles, setArticles] = useState<ArticleDTO[]>([]);
-
+  const [order, setOrder] = useState<Order>({
+    customerId: localStorage.getItem("user")?.slice(6, 7),
+    address: "",
+    articles: [],
+    comment: "",
+    price: 0,
+  });
   useEffect(() => {
     articleHttpService
       .getAll()
@@ -24,6 +34,44 @@ const NewOrder = () => {
 
   const removeFromCart = (id: number) => {
     setCart(cart.filter((item) => item.id !== id));
+    setOrder({
+      ...order,
+      articles: cart.filter((item) => item.id !== id),
+      price: cart
+        .filter((item) => item.id !== id)
+        .reduce((acc, item) => item.price * item.quantity + acc, 0),
+    });
+  };
+
+  const submitOrder = () => {
+    if (cart.length === 0) {
+      Swal.fire({
+        icon: "error",
+        title: "No items in cart !",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } else if (order.address.trim() === "") {
+      Swal.fire({
+        icon: "error",
+        title: "Please, add address for delivery.",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } else {
+      console.log(order);
+      orderService.create(order).then((response) => {
+      console.log(response.data);
+      Swal.fire({
+        icon: "success",
+        title: "Your order has been sent.",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+      //navigate("/newOrder");
+       });
+    }
   };
 
   const addToCart = (id: number, wantedAmount: number) => {
@@ -51,6 +99,14 @@ const NewOrder = () => {
         } else {
           item!.quantity = wantedAmount;
           setCart((cart) => [...cart, item]);
+          setOrder({
+            ...order,
+            articles: [...cart, item],
+            price: [...cart, item].reduce(
+              (acc, item) => item.price * item.quantity + acc,
+              0
+            ),
+          });
           Swal.fire({
             icon: "success",
             title: "Item added to cart.",
@@ -139,7 +195,7 @@ const NewOrder = () => {
                       <td>{item.name}</td>
                       <td>{item.description}</td>
                       <td>{item.quantity}</td>
-                      <td>{item.price}</td>
+                      <td>${item.price}</td>
                       <td width="24%">
                         <AiFillDelete
                           size="15%"
@@ -151,6 +207,38 @@ const NewOrder = () => {
                   ))}
                 </tbody>
               </table>
+              <div className="row">
+                <div className="col-sm-6">
+                  <textarea
+                    value={order.comment}
+                    onChange={(event) => {
+                      setOrder({
+                        ...order,
+                        comment: event.target.value,
+                      });
+                    }}
+                    id="comment"
+                    type="text"
+                    className="form-control"
+                    placeholder="Comment"
+                  />
+                </div>
+                <div className="col-sm-6">
+                  <textarea
+                    value={order.address}
+                    onChange={(event) => {
+                      setOrder({
+                        ...order,
+                        address: event.target.value,
+                      });
+                    }}
+                    id="address"
+                    type="text"
+                    className="form-control"
+                    placeholder="Address"
+                  />
+                </div>
+              </div>
             </div>
             <div className="modal-footer">
               <h4 style={{ marginRight: "12%" }}>
@@ -166,7 +254,11 @@ const NewOrder = () => {
               >
                 Close
               </button>
-              <button type="button" className="btn btn-primary">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={submitOrder}
+              >
                 Order
               </button>
             </div>

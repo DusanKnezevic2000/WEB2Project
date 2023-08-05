@@ -15,13 +15,14 @@ namespace WebShopApp_Data.Models
         public string Comment { get; set; }
         public string Address { get; set; }
         public double Price { get; set; }
+        public OrderStatus Status { get; set; }
 
         public Order()
         {
 
         }
 
-        public Order(int customerId, List<ArticleForOrder> articles, DateTime startTime, DateTime endTime, string comment, string address, double price)
+        public Order(int customerId, List<ArticleForOrder> articles, DateTime startTime, DateTime endTime, string comment, string address, double price, OrderStatus status)
         {
             CustomerId = customerId;
             Articles = articles;
@@ -30,6 +31,7 @@ namespace WebShopApp_Data.Models
             Comment = comment;
             Address = address;
             Price = price;
+            Status = status;
         }
     }
 }

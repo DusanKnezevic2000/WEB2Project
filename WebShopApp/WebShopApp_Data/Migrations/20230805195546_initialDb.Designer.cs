@@ -10,7 +10,7 @@ using WebShopApp_Data;
 namespace WebShopApp_Data.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230804093825_initialDb")]
+    [Migration("20230805195546_initialDb")]
     partial class initialDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -135,6 +135,9 @@ namespace WebShopApp_Data.Migrations
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

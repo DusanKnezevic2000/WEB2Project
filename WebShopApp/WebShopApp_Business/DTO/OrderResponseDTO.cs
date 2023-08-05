@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebShopApp_Data.Models;
 
 namespace WebShopApp_Business.DTO
 { 
@@ -16,8 +17,9 @@ namespace WebShopApp_Business.DTO
         public string Comment { get; set; }
         public string Address { get; set; }
         public double Price { get; set; }
+        public OrderStatus Status { get; set; }
 
-        public OrderResponseDTO(int id, UserDTO customer, List<ArticleDTO> articles, string startTime, string endTime, string comment, string address, double price)
+        public OrderResponseDTO(int id, UserDTO customer, List<ArticleDTO> articles, string startTime, string endTime, string comment, string address, double price, OrderStatus status)
         {
             Id = id;
             Customer = customer;
@@ -27,9 +29,10 @@ namespace WebShopApp_Business.DTO
             Comment = comment;
             Address = address;
             Price = price;
+            Status = status;
         }
 
-        public OrderResponseDTO(int id, List<ArticleDTO> articles, string startTime, string endTime, string comment, string address, double price)
+        public OrderResponseDTO(int id, List<ArticleDTO> articles, string startTime, string endTime, string comment, string address, double price, OrderStatus status)
         {
             Id = id;
             Articles = articles;
@@ -38,6 +41,7 @@ namespace WebShopApp_Business.DTO
             Comment = comment;
             Address = address;
             Price = price;
+            Status = status;
         }
     }
 }

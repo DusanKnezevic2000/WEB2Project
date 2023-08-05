@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using WebShopApp_Business;
+using WebShopApp_Business.DTO;
+using WebShopApp_Business.Service;
 using WebShopApp_Data.Models;
 
 namespace WebShopApp.Controllers
@@ -34,9 +36,15 @@ namespace WebShopApp.Controllers
 
         // POST api/<OrderController>
         [HttpPost]
-        public Order Post(Order order)
+        public IActionResult Post(OrderDTO order)
         {
-            return _orderService.Create(order);
+            try {
+                _orderService.Create(DTOMapper.OrderDTO_To_Order(order));
+                return Ok("Order created successfully");
+            }
+            catch {
+                return BadRequest("Order not created");
+            }
         }
 
         // PUT api/<OrderController>/5
