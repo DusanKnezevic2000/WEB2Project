@@ -196,8 +196,30 @@ const AddArticle = () => {
   const handleEditSubmit = () => {
     if (validateEdit()) {
       console.log("OK");
-      document.getElementById("editClose")?.click();
       console.log(editArticleInfo);
+      articleService
+        .update(editArticleInfo)
+        .then((response) => {
+          console.log(response.data);
+          const updatedArticles = articles.map((obj) => {
+            // 👇️ if id equals 2, update country property
+            if (obj.id === editArticleInfo.id) {
+              return {
+                id: response.data.id,
+                price: response.data.price,
+                name: response.data.name,
+                quantity: response.data.quantity,
+                description: response.data.description,
+                image: response.data.image,
+              };
+            }
+            // 👇️ otherwise return the object as is
+            return obj;
+          });
+          setArticles(updatedArticles);
+        })
+        .catch((error) => console.log(error));
+      document.getElementById("editClose")?.click();
     } else {
       console.log("NOT OK");
     }

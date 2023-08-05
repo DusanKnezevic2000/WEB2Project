@@ -25,6 +25,11 @@ namespace WebShopApp_Business.Service
             return _articleRepository.Insert(article);
         }
 
+        public Article Update(Article article)
+        {
+            return _articleRepository.Update(article);
+        }
+
         public IEnumerable<Article> GetAll()
         {
             return _articleRepository.GetAll();

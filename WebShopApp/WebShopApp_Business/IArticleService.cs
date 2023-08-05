@@ -13,7 +13,7 @@ namespace WebShopApp_Business
         public Article GetById(int id);
         public IEnumerable<Article> GetAll();
         public Article Create(Article article);
-
+        public Article Update(Article article);
         public void Delete(int id);
     }
 }

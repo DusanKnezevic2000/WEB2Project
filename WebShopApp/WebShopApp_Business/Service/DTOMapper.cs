@@ -150,6 +150,16 @@ namespace WebShopApp_Business.Service
             return articlesDto;
         }
 
+        public static List<ArticleDTO> List_Article_to_ArticleDTO(List<Article> articles)
+        {
+            List<ArticleDTO> articlesDto = new List<ArticleDTO>();
+            foreach (Article article in articles)
+            {
+                articlesDto.Add(Article_To_ArticleDTO(article));
+            }
+            return articlesDto;
+        }
+
         public static List<UserDTO> List_User_to_UserDTO(List<User> users)
         {
             List<UserDTO> usersDto = new List<UserDTO>();
