@@ -25,6 +25,7 @@ namespace WebShopApp_Data.Models
         {
             CustomerId = customerId;
             Articles = articles;
+            StartTime = startTime;
             EndTime = endTime;
             Comment = comment;
             Address = address;

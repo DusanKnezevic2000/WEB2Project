@@ -21,6 +21,18 @@ namespace WebShopApp_Business.DTO
         {
             Id = id;
             Customer = customer;
+            Articles = articles;
+            StartTime = startTime;
+            EndTime = endTime;
+            Comment = comment;
+            Address = address;
+            Price = price;
+        }
+
+        public OrderResponseDTO(int id, List<ArticleDTO> articles, string startTime, string endTime, string comment, string address, double price)
+        {
+            Id = id;
+            Articles = articles;
             StartTime = startTime;
             EndTime = endTime;
             Comment = comment;
