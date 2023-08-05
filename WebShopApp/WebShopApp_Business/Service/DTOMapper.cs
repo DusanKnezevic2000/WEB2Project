@@ -149,5 +149,15 @@ namespace WebShopApp_Business.Service
             }
             return articlesDto;
         }
+
+        public static List<UserDTO> List_User_to_UserDTO(List<User> users)
+        {
+            List<UserDTO> usersDto = new List<UserDTO>();
+            foreach (User user in users)
+            {
+                usersDto.Add(User_To_UserDTO_Safe(user));
+            }
+            return usersDto;
+        }
     }
 }

@@ -33,7 +33,7 @@ const Profile = () => {
         setUser({
           id: response.data.id,
           username: response.data.username,
-          password: response.data.password,
+          password: "",
           name: response.data.name,
           dateOfBirth: response.data.dateOfBirth.slice(0, 10),
           address: response.data.address,
@@ -46,12 +46,27 @@ const Profile = () => {
   const handleSubmit = () => {
     if (validateEdit()) {
       console.log(user);
-      Swal.fire({
-        icon: "success",
-        title: "Personal information is updated successfully.",
-        showConfirmButton: false,
-        timer: 1500,
-      });
+      userService
+        .update(user)
+        .then((response) => {
+          setUser({
+            id: response.data.id,
+            username: response.data.username,
+            password: "",
+            name: response.data.name,
+            dateOfBirth: response.data.dateOfBirth.slice(0, 10),
+            address: response.data.address,
+            image: response.data.image,
+            status: response.data.status,
+          });
+          Swal.fire({
+            icon: "success",
+            title: "Personal information is updated successfully.",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        })
+        .catch((error) => console.log(error.response.data));
     } else {
       console.log("BAD");
     }
@@ -69,7 +84,7 @@ const Profile = () => {
     if (user.username.trim().length < 3) {
       usernameError = true;
     }
-    if (user.password.trim().length < 6) {
+    if (user.password.trim().length < 6 && user.password.trim().length > 0) {
       passwordError = true;
     }
     if (user.dateOfBirth.trim().length === 0) {
@@ -98,17 +113,16 @@ const Profile = () => {
     return true;
   };
 
-  const handleFileChange = (event: ChangeEvent) => {
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     var reader = new FileReader();
-    reader.readAsDataURL(event.target.files[0]);
-    reader.onload = (event: any) => {
-      if (event.target.result == "") {
-        isImageInvalid = true;
-      } else {
-        isImageInvalid = false;
-      }
-      setImgFile(event.target.result);
-    };
+    try {
+      reader.readAsDataURL(event.target.files[0]);
+      reader.onload = (event: any) => {
+        setUser({ ...user, image: event.target.result });
+      };
+    } catch {
+      setUser({ ...user, image: "" });
+    }
   };
 
   return (
@@ -184,7 +198,7 @@ const Profile = () => {
                 id="password"
                 type="password"
                 className="form-control"
-                placeholder="Password"
+                placeholder="Password (leave empty if you don't want to change)"
               />
               {editErrors.password && (
                 <p className="text-danger">

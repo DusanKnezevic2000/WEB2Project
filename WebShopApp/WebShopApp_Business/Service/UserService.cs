@@ -53,6 +53,7 @@ namespace WebShopApp_Business.Service
 
         public User Update(User user)
         {
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
             return _userRepository.Update(user);
         }
     }

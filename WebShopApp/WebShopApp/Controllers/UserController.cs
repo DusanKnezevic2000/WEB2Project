@@ -8,6 +8,7 @@ using WebShopApp_Business;
 using WebShopApp_Data.Models;
 using WebShopApp_Business.DTO;
 using WebShopApp_Business.Service;
+using System.Linq;
 
 namespace WebShopApp.Controllers
 {
@@ -41,16 +42,23 @@ namespace WebShopApp.Controllers
 
         [HttpGet]
         //[Authorize(Role.Admin)]
-        public IEnumerable<User> GetAll()
+        public List<UserDTO> GetAll()
         {
-            return _userService.GetAllUsers();
+            return DTOMapper.List_User_to_UserDTO(_userService.GetAllUsers().ToList());
+        }
+
+        [HttpGet("[action]")]
+        //[Authorize(Role.Admin)]
+        public List<UserDTO> Verifications()
+        {
+            return DTOMapper.List_User_to_UserDTO(_userService.GetAllUsers().Where(u => u.Role == Role.Salesman).ToList());
         }
 
         [HttpGet]
         [Route("{id}")]
-        public User GetById(int id)
+        public UserDTO GetById(int id)
         {
-            return _userService.GetUser(id);
+            return DTOMapper.User_To_UserDTO(_userService.GetUser(id));
         }
 
         [HttpPost]
@@ -64,11 +72,59 @@ namespace WebShopApp.Controllers
             return Ok(_userService.RegisterUser(DTOMapper.UserDTO_To_User(user)));
         }
 
+        [HttpPut("[action]/{id}")]
+        [AllowAnonymous]
+        public IActionResult Approve(int id)
+        {
+            User user = _userService.GetUser(id);
+            if (user != null) {
+                user.Status = VerificationStatus.Approved;
+                _userService.Update(user);
+                return Ok(true);
+            }
+            return BadRequest(false);
+        }
+
+        [HttpPut("[action]/{id}")]
+        [AllowAnonymous]
+        public IActionResult Reject(int id)
+        {
+            User user = _userService.GetUser(id);
+            if (user != null)
+            {
+                user.Status = VerificationStatus.Denied;
+                _userService.Update(user);
+                return Ok(true);
+            }
+            return BadRequest(false);
+        }
+
         [HttpPut]
         [AllowAnonymous]
-        public User Update(User user)
+        public IActionResult Update(UpdateUserDTO user)
         {
-            return _userService.Update(user);
+            User u;
+            try
+            {
+                User usernameExists = _userService.GetByUsername(user.Username);
+                if (usernameExists != null && usernameExists.Id != user.Id)
+                    return BadRequest("Username is taken. Please, pick something else.");
+                u = _userService.GetUser(user.Id);
+                u.Address = user.Address;
+                u.Username = user.Username;
+                u.Name = user.Name;
+                u.DateOfBirth = user.DateOfBirth;
+                u.Image = user.Image;
+                if (user.Password != "")
+                    u.Password = user.Password;
+                _userService.Update(u);
+                return Ok(DTOMapper.User_To_UserDTO(u));
+            }
+            catch 
+            {
+                return BadRequest("User not found.");
+
+            }
         }
     }
 }

@@ -1,7 +1,9 @@
-import axios from "axios";
+import axios, { CanceledError } from "../../services/api-client";
 import React, { useEffect, useState } from "react";
 import articleHttpService from "../../services/article-http-service";
+import verificationService from "../../services/verification-service";
 import Alert from "../Alert";
+import UserDTO from "../../DTO/UserDTO";
 
 interface VerificationRequest {
   id: number;
@@ -16,78 +18,23 @@ interface VerificationRequest {
 }
 
 const Verification = () => {
-  let [verificationRequests, setVerificationRequests] = useState([
-    {
-      id: 1,
-      name: "name1",
-      username: "username1",
-      email: "email1",
-      dateOfBirth: "2000-10-10",
-      address: "address1",
-      role: "Salesman",
-      image: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-      status: "Approved",
-    },
-    {
-      id: 2,
-      name: "name2",
-      username: "username2",
-      email: "email2",
-      dateOfBirth: "2000-10-10",
-      address: "address2",
-      role: "Salesman",
-      image: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-      status: "Rejected",
-    },
-    {
-      id: 3,
-      name: "name3",
-      username: "username3",
-      email: "email3",
-      dateOfBirth: "2000-10-10",
-      address: "address3",
-      role: "Salesman",
-      image: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-      status: "Processing",
-    },
-    {
-      id: 4,
-      name: "name4",
-      username: "username4",
-      email: "email4",
-      dateOfBirth: "2000-10-10",
-      address: "address4",
-      role: "Salesman",
-      image: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-      status: "Rejected",
-    },
-    {
-      id: 5,
-      name: "name5",
-      username: "username5",
-      email: "email5",
-      dateOfBirth: "2000-10-10",
-      address: "address5",
-      role: "Salesman",
-      image: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-      status: "Approved",
-    },
-    {
-      id: 6,
-      name: "name6",
-      username: "username6",
-      email: "email6",
-      dateOfBirth: "2000-10-10",
-      address: "address6",
-      role: "Salesman",
-      image: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-      status: "Processing",
-    },
-  ]);
+  let [verificationRequests, setVerificationRequests] = useState([]);
 
   let [allVerificationRequests, setAllVerificationRequests] = useState([
     ...verificationRequests,
   ]);
+
+  useEffect(() => {
+    const { request, cancel } = verificationService.getAll();
+    request
+      .then((response) => {
+        setVerificationRequests(response.data);
+        setAllVerificationRequests(response.data);
+      })
+      .catch((error) => {
+        if (error instanceof CanceledError) return () => cancel;
+      });
+  }, []);
 
   let [tab, setTab] = useState("all");
 
@@ -106,7 +53,7 @@ const Verification = () => {
 
   const filterRejected = () => {
     setVerificationRequests(
-      [...allVerificationRequests].filter((vr) => vr.status === "Rejected")
+      [...allVerificationRequests].filter((vr) => vr.status === "Denied")
     );
   };
 
@@ -116,44 +63,54 @@ const Verification = () => {
   };
 
   const approve = (id: number) => {
-    let newState = allVerificationRequests.map((req) => {
-      if (req.id === id) {
-        return { ...req, status: "Approved" };
-      }
-      return req;
-    });
-    console.log(tab);
-    setAllVerificationRequests([...newState]);
-    if (tab === "all") {
-      setVerificationRequests([...newState]);
-    } else {
-      console.log("USAO");
-      setVerificationRequests(
-        [...newState].filter((vr) => vr.status === "Processing")
-      );
-    }
-
-    console.log("Approved " + id);
+    verificationService
+      .approve(id)
+      .then((response) => {
+        if (response.data) {
+          let newState = allVerificationRequests.map((req) => {
+            if (req.id === id) {
+              return { ...req, status: "Approved" };
+            }
+            return req;
+          });
+          console.log(tab);
+          setAllVerificationRequests([...newState]);
+          if (tab === "all") {
+            setVerificationRequests([...newState]);
+          } else {
+            console.log("USAO");
+            setVerificationRequests(
+              [...newState].filter((vr) => vr.status === "Processing")
+            );
+          }
+        }
+      })
+      .catch((error) => console.log(error.response.data));
   };
 
   const reject = (id: number) => {
-    const newState = allVerificationRequests.map((req) => {
-      if (req.id === id) {
-        return { ...req, status: "Rejected" };
-      }
-      return req;
-    });
-    console.log(tab);
-    setAllVerificationRequests([...newState]);
-    if (tab === "all") {
-      setVerificationRequests([...newState]);
-    } else {
-      setVerificationRequests(
-        [...newState].filter((vr) => vr.status === "Processing")
-      );
-    }
-
-    console.log("Rejected " + id);
+    verificationService
+      .reject(id)
+      .then((response) => {
+        if (response.data) {
+          const newState = allVerificationRequests.map((req) => {
+            if (req.id === id) {
+              return { ...req, status: "Denied" };
+            }
+            return req;
+          });
+          console.log(tab);
+          setAllVerificationRequests([...newState]);
+          if (tab === "all") {
+            setVerificationRequests([...newState]);
+          } else {
+            setVerificationRequests(
+              [...newState].filter((vr) => vr.status === "Processing")
+            );
+          }
+        }
+      })
+      .catch((error) => console.log(error.response.data));
   };
 
   return (
@@ -216,7 +173,7 @@ const Verification = () => {
               <th>E-mail</th>
               <th>Birth Date</th>
               <th>Address</th>
-              <th>User Type</th>
+              <th>Role</th>
               <th>Photo</th>
               <th>Status</th>
             </tr>
@@ -227,7 +184,7 @@ const Verification = () => {
                 <td>{verificationRequest.name}</td>
                 <td>{verificationRequest.username}</td>
                 <td>{verificationRequest.email}</td>
-                <td>{verificationRequest.dateOfBirth}</td>
+                <td>{verificationRequest.dateOfBirth.slice(0, 10)}</td>
                 <td>{verificationRequest.address}</td>
                 <td>{verificationRequest.role}</td>
                 <td>
@@ -262,7 +219,7 @@ const Verification = () => {
                       <Alert status="Approved" color="alert-success" />
                     </>
                   )}
-                  {verificationRequest.status === "Rejected" && (
+                  {verificationRequest.status === "Denied" && (
                     <>
                       <Alert status="Rejected" color="alert-danger" />
                     </>

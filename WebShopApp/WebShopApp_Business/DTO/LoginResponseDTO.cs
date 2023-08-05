@@ -14,6 +14,7 @@ namespace WebShopApp_Business.DTO
         public string Username { get; set; }
         public Role Role { get; set; }
         public string Token { get; set; }
+        public VerificationStatus Status { get; set; }
 
         public LoginResponseDTO(User user, string token)
         {
@@ -22,6 +23,7 @@ namespace WebShopApp_Business.DTO
             Username = user.Username;
             Role = user.Role;
             Token = token;
+            Status = user.Status;
         }
     }
 }
