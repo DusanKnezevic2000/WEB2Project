@@ -51,7 +51,7 @@ namespace WebShopApp
                 options.AddDefaultPolicy(
                     policy =>
                     {
-                        policy.WithOrigins("http://127.0.0.1:5173").AllowAnyMethod();
+                        policy.WithOrigins("http://127.0.0.1:5173").AllowAnyMethod().AllowAnyHeader();
                     });
             });
 
@@ -62,7 +62,9 @@ namespace WebShopApp
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IArticleRepository, ArticleRepository>();
+            services.AddScoped<IArticleForOrderRepository, ArticleForOrderRepository>();
             services.AddScoped<IArticleService, ArticleService>();
+            services.AddScoped<IArticleForOrderService, ArticleForOrderService>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddSwaggerGen(c =>

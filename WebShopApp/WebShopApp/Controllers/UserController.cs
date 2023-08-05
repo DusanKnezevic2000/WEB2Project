@@ -7,6 +7,7 @@ using WebShopApp.Authorization;
 using WebShopApp_Business;
 using WebShopApp_Data.Models;
 using WebShopApp_Business.DTO;
+using WebShopApp_Business.Service;
 
 namespace WebShopApp.Controllers
 {
@@ -27,11 +28,11 @@ namespace WebShopApp.Controllers
         [HttpPost("[action]")]
         public IActionResult Authenticate(LoginDTO model)
         {
-            var user = _userService.GetByUsername(model.Username);
+            var user = _userService.GetByEmail(model.Email);
 
             // validate
             if (user == null || !BCryptNet.Verify(model.Password, user.Password))
-                throw new ApplicationException("Username or password is incorrect");
+                return BadRequest("Wrong credentials. Please, try again.");
 
             // authentication successful so generate jwt token
             var jwtToken = _jwtUtils.GenerateJwtToken(user);
@@ -54,9 +55,13 @@ namespace WebShopApp.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public User RegisterUser(User user)
+        public IActionResult RegisterUser(UserDTO user)
         {
-            return _userService.RegisterUser(user);
+            if (_userService.GetByEmail(user.Email) != null)
+                return BadRequest("User with provided email already exists.");
+            if (_userService.GetByUsername(user.Username) != null)
+                return BadRequest("Username is taken. Please, pick something else.");
+            return Ok(_userService.RegisterUser(DTOMapper.UserDTO_To_User(user)));
         }
 
         [HttpPut]
