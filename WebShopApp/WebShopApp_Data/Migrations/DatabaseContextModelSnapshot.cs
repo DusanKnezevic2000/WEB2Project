@@ -90,10 +90,16 @@ namespace WebShopApp_Data.Migrations
                     b.Property<int?>("OrderId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("OriginalArticleId")
+                        .HasColumnType("integer");
+
                     b.Property<double>("Price")
                         .HasColumnType("double precision");
 
                     b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SalesmanId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
