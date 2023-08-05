@@ -114,7 +114,7 @@ const RegistrationForm = () => {
       userService
         .create(registerInfo)
         .then((response) => console.log(response.data))
-        .catch((error) => console.log(error));
+        .catch((error) => console.log(error.response.data));
     } else {
       console.log("NOT OK");
     }
@@ -306,7 +306,7 @@ const RegistrationForm = () => {
                     aria-label=".form-select example"
                   >
                     <option value="">Open this select menu</option>
-                    <option value="administrator">Administrator</option>
+                    <option value="admin">Administrator</option>
                     <option value="salesman">Salesman</option>
                     <option value="customer">Customer</option>
                   </select>

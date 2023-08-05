@@ -14,5 +14,6 @@ namespace WebShopApp_Business
         public User RegisterUser(User user);
         public User Update(User user);
         public User GetByUsername(string username);
+        public User GetByEmail(string email);
     }
 }

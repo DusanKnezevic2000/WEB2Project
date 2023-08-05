@@ -31,6 +31,10 @@ class HttpService {
     update<T extends Entity>(entity: T) {
         return apiClient.patch(this.endpoint + "/" + entity.id, entity)
     }
+
+    getById(id: number) {
+        return apiClient.get(this.endpoint + "/" + id)
+    }
 }
 
 const create = (endpoint: string) => new HttpService(endpoint);

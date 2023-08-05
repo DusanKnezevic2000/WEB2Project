@@ -16,5 +16,10 @@ namespace WebShopApp_Data.Repositories
         {
             return _dbContext.Set<User>().FirstOrDefault(u => u.Username == username);
         }
+
+        public User GetByEmail(string email)
+        {
+            return _dbContext.Set<User>().FirstOrDefault(u => u.Email.ToLower() == email.ToLower().Trim());
+        }
     }
 }

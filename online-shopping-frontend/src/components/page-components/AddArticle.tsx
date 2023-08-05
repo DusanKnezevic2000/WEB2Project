@@ -4,13 +4,14 @@ import { RiEditCircleFill } from "react-icons/ri";
 import Articles from "../Articles";
 import ArticleDTO from "../../DTO/ArticleDTO";
 import articleService from "../../services/article-service";
-import { CanceledError } from "axios";
+import { CanceledError } from "../../services/api-client";
 
 const AddArticle = () => {
   let [articles, setArticles] = useState<ArticleDTO[]>([]);
 
   const [editArticleInfo, setEditArticleInfo] = useState<ArticleDTO>({
     id: 0,
+    salesmanId: 0,
     quantity: 0,
     description: "",
     image: "",
@@ -20,6 +21,7 @@ const AddArticle = () => {
 
   const [addArticleInfo, setAddArticleInfo] = useState<ArticleDTO>({
     id: 0,
+    salesmanId: -2, //set from login information
     quantity: 0,
     description: "",
     image: "",
@@ -85,7 +87,7 @@ const AddArticle = () => {
       });
   };
 
-  const handleFileChange = (event: ChangeEvent) => {
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     try {
       var reader = new FileReader();
       reader.readAsDataURL(event.target.files[0]);
@@ -97,7 +99,7 @@ const AddArticle = () => {
     }
   };
 
-  const handleEditFileChange = (event: ChangeEvent) => {
+  const handleEditFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     var reader = new FileReader();
     try {
       reader.readAsDataURL(event.target.files[0]);
@@ -115,10 +117,10 @@ const AddArticle = () => {
     let priceError = false;
     let quantityError = false;
     let imageError = false;
-    if (addArticleInfo.name.length === 0) {
+    if (addArticleInfo.name.trim().length === 0) {
       nameError = true;
     }
-    if (addArticleInfo.description.length === 0) {
+    if (addArticleInfo.description.trim().length === 0) {
       descriptionError = true;
     }
     if (addArticleInfo.price <= 0) {
@@ -156,10 +158,10 @@ const AddArticle = () => {
     let priceError = false;
     let quantityError = false;
     let imageError = false;
-    if (editArticleInfo.name.length === 0) {
+    if (editArticleInfo.name.trim().length === 0) {
       nameError = true;
     }
-    if (editArticleInfo.description.length === 0) {
+    if (editArticleInfo.description.trim().length === 0) {
       descriptionError = true;
     }
     if (editArticleInfo.price <= 0) {
@@ -205,6 +207,13 @@ const AddArticle = () => {
     if (validateAdd()) {
       console.log("OK");
       console.log(addArticleInfo);
+      articleService
+        .create(addArticleInfo)
+        .then((response) => {
+          console.log(response.data);
+          setArticles((articles) => [...articles, response.data]);
+        })
+        .catch((error) => console.log(error));
       document.getElementById("addClose")?.click();
     } else {
       console.log("NOT OK");
@@ -286,7 +295,7 @@ const AddArticle = () => {
                           onChange={(event) =>
                             setAddArticleInfo({
                               ...addArticleInfo,
-                              name: event.target.value.trim(),
+                              name: event.target.value,
                             })
                           }
                           id="name"
@@ -307,7 +316,7 @@ const AddArticle = () => {
                           onChange={(event) =>
                             setAddArticleInfo({
                               ...addArticleInfo,
-                              price: parseInt(addArticleInfo.price.toFixed()),
+                              price: parseInt(event.target.value).toFixed(),
                             })
                           }
                           id="price"
@@ -331,9 +340,7 @@ const AddArticle = () => {
                           onChange={(event) =>
                             setAddArticleInfo({
                               ...addArticleInfo,
-                              quantity: parseInt(
-                                addArticleInfo.quantity.toFixed()
-                              ),
+                              quantity: parseInt(event.target.value).toFixed(),
                             })
                           }
                           id="quantity"
@@ -352,12 +359,12 @@ const AddArticle = () => {
                         <label htmlFor="description" className="form-label">
                           Description
                         </label>
-                        <input
+                        <textarea
                           value={addArticleInfo.description}
                           onChange={(event) =>
                             setAddArticleInfo({
                               ...addArticleInfo,
-                              description: event.target.value.trim(),
+                              description: event.target.value,
                             })
                           }
                           id="description"
@@ -463,7 +470,7 @@ const AddArticle = () => {
                           onChange={(event) =>
                             setEditArticleInfo({
                               ...editArticleInfo,
-                              name: event.target.value.trim(),
+                              name: event.target.value,
                             })
                           }
                           id="name"
@@ -527,12 +534,12 @@ const AddArticle = () => {
                         <label htmlFor="description" className="form-label">
                           Description
                         </label>
-                        <input
+                        <textarea
                           value={editArticleInfo.description}
                           onChange={(event) =>
                             setEditArticleInfo({
                               ...editArticleInfo,
-                              description: event.target.value.trim(),
+                              description: event.target.value,
                             })
                           }
                           id="description"

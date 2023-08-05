@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentResults;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using WebShopApp_Business;
+using WebShopApp_Business.DTO;
+using WebShopApp_Business.Service;
 using WebShopApp_Data.Models;
 
 namespace WebShopApp.Controllers
@@ -32,9 +36,18 @@ namespace WebShopApp.Controllers
 
         // POST api/<ArticleController>
         [HttpPost]
-        public Article Post([FromBody] Article value)
+        public IActionResult Post([FromBody] ArticleDTO value)
         {
-            return _articleService.Create(value);
+            try
+            {
+                Article res = _articleService.Create(DTOMapper.ArticleDTO_to_Article(value));
+                return Ok(DTOMapper.Article_To_ArticleDTO(res));
+            }
+            catch
+            {
+                return BadRequest();
+
+            }
         }
 
         // PUT api/<ArticleController>/5

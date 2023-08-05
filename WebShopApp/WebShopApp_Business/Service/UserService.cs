@@ -26,6 +26,11 @@ namespace WebShopApp_Business.Service
             return _userRepository.GetByUsername(username);
         }
 
+        public User GetByEmail(string email)
+        {
+            return _userRepository.GetByEmail(email);
+        }
+
         public IEnumerable<User> GetAllUsers()
         {
             return _userRepository.GetAll();
@@ -39,6 +44,10 @@ namespace WebShopApp_Business.Service
         public User RegisterUser(User user)
         {
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            if (user.Role == Role.Salesman)
+                user.Status = VerificationStatus.Processing;
+            else
+                user.Status = VerificationStatus.Approved;
             return _userRepository.Insert(user);
         }
 

@@ -3,6 +3,7 @@ import { FaUserAlt } from "react-icons/fa";
 import Alert from "../Alert";
 import UserDTO from "../../DTO/UserDTO";
 import Swal from "sweetalert2";
+import userService from "../../services/user-service";
 
 const Profile = () => {
   const [editErrors, setEditErrors] = useState({
@@ -21,18 +22,25 @@ const Profile = () => {
     dateOfBirth: "",
     address: "",
     image: "",
+    status: "",
   });
 
   useEffect(() => {
-    setUser({
-      id: 1,
-      username: "username",
-      password: "password",
-      name: "name",
-      dateOfBirth: "2000-10-10",
-      address: "address",
-      image: "",
-    });
+    console.log(localStorage.getItem("user")?.slice(6, 7));
+    userService
+      .getById(localStorage.getItem("user")?.slice(6, 7))
+      .then((response) => {
+        setUser({
+          id: response.data.id,
+          username: response.data.username,
+          password: response.data.password,
+          name: response.data.name,
+          dateOfBirth: response.data.dateOfBirth.slice(0, 10),
+          address: response.data.address,
+          image: response.data.image,
+          status: response.data.status,
+        });
+      });
   }, []);
 
   const handleSubmit = () => {
@@ -117,7 +125,15 @@ const Profile = () => {
             </div>
             <div className="mb-1">
               <br />
-              <Alert status="Verified" color="alert-success" />
+              {user.status === "Processing" && (
+                <Alert status={user.status} color="alert-warning" />
+              )}
+              {user.status === "Rejected" && (
+                <Alert status={user.status} color="alert-danger" />
+              )}
+              {user.status === "Approved" && (
+                <Alert status={user.status} color="alert-success" />
+              )}
             </div>
           </div>
           <div className="col-sm-2"></div>
@@ -125,7 +141,7 @@ const Profile = () => {
             <br />
             <br />
             <img
-              src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+              src={user.image}
               className="rounded mx-auto d-block"
               alt="..."
               height="300"

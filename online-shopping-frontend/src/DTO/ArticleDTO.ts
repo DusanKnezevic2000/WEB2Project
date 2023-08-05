@@ -1,5 +1,6 @@
 interface ArticleDTO {
     id: number;
+    salesmanId: number;
     name: string;
     price: number;
     quantity: number;

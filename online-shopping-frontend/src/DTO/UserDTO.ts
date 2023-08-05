@@ -6,6 +6,7 @@ interface UserDTO {
     dateOfBirth: string;
     address: string
     image: string;
+    status: string;
 }
 
 export default UserDTO;
