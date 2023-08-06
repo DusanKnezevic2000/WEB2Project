@@ -1,18 +1,18 @@
 import axios from "axios";
 import create from "./http-service";
 
-export default create("/order");
+export default create(import.meta.env.VITE_BACKEND_ORDER_API);
 
 class OrderHelpService {
 
     constructor(){}
 
-    backendApi = 'http://localhost:5000/api/order';
+    backendApi = import.meta.env.VITE_BACKEND_ORDER_API;
 
     getCustomerOrders(id: number) {
         const controller = new AbortController();
         const request = axios
-          .get(this.backendApi + "/customer/" + id, {
+          .get(import.meta.env.VITE_BACKEND_ORDER_CUSTOMER_API + "/" + id, {
             signal: controller.signal,
           })
           return {request, cancel: () => controller.abort()}
@@ -21,7 +21,7 @@ class OrderHelpService {
     getSalesmanOrders(id: number) {
         const controller = new AbortController();
         const request = axios
-          .get(this.backendApi + "/salesman/" + id, {
+          .get(import.meta.env.VITE_BACKEND_ORDER_SALESMAN_API + "/" + id, {
             signal: controller.signal,
           })
           return {request, cancel: () => controller.abort()}
@@ -30,7 +30,7 @@ class OrderHelpService {
     getCustomerNewOrders(id: number) {
         const controller = new AbortController();
         const request = axios
-          .get(this.backendApi + "/customerNew/" + id, {
+          .get(import.meta.env.VITE_BACKEND_ORDER_CUSTOMER_NEW_API + "/" + id, {
             signal: controller.signal,
           })
           return {request, cancel: () => controller.abort()}
@@ -39,7 +39,7 @@ class OrderHelpService {
     getSalesmanNewOrders(id: number) {
         const controller = new AbortController();
         const request = axios
-          .get(this.backendApi + "/salesmanNew/" + id, {
+          .get(import.meta.env.VITE_BACKEND_ORDER_SALESMAN_NEW_API + "/" + id, {
             signal: controller.signal,
           })
           return {request, cancel: () => controller.abort()}

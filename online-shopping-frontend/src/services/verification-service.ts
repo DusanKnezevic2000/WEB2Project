@@ -5,23 +5,23 @@ class VerificationService {
 
     constructor(){}
 
-    backendApi = 'http://localhost:5000/api/user';
+    backendApi = import.meta.env.VITE_BACKEND_USER_API;
 
     getAll() {
         const controller = new AbortController();
         const request = axios
-          .get(this.backendApi + "/verifications", {
+          .get(import.meta.env.VITE_BACKEND_USER_VERIFICATIONS_API, {
             signal: controller.signal,
           })
           return {request, cancel: () => controller.abort()}
     }
 
     approve(id: number) {
-        return axios.put(this.backendApi + "/approve/" + id)
+        return axios.put(import.meta.env.VITE_BACKEND_USER_APPROVE_API + "/" + id)
     }
 
     reject(id: number) {
-        return axios.put(this.backendApi + "/reject/" + id)
+        return axios.put(import.meta.env.VITE_BACKEND_USER_REJECT_API + "/" + id)
     }
 
 }

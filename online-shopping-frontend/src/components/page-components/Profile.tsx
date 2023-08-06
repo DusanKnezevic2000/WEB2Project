@@ -148,7 +148,7 @@ const Profile = () => {
               {user.status === "Processing" && (
                 <Alert status={user.status} color="alert-warning" />
               )}
-              {user.status === "Rejected" && (
+              {user.status === "Denied" && (
                 <Alert status={user.status} color="alert-danger" />
               )}
               {user.status === "Approved" && (

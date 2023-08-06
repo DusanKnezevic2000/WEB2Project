@@ -9,6 +9,8 @@ using WebShopApp_Data.Models;
 using WebShopApp_Business.DTO;
 using WebShopApp_Business.Service;
 using System.Linq;
+using System.Xml.Linq;
+using System.Threading.Tasks;
 
 namespace WebShopApp.Controllers
 {
@@ -74,12 +76,13 @@ namespace WebShopApp.Controllers
 
         [HttpPut("[action]/{id}")]
         [AllowAnonymous]
-        public IActionResult Approve(int id)
+        public async Task<IActionResult> Approve(int id)
         {
             User user = _userService.GetUser(id);
             if (user != null) {
                 user.Status = VerificationStatus.Approved;
                 _userService.Update(user);
+                EmailService.SendApproveEmail(user.Email);
                 return Ok(true);
             }
             return BadRequest(false);
@@ -94,6 +97,7 @@ namespace WebShopApp.Controllers
             {
                 user.Status = VerificationStatus.Denied;
                 _userService.Update(user);
+                EmailService.SendRejectEmail(user.Email);
                 return Ok(true);
             }
             return BadRequest(false);

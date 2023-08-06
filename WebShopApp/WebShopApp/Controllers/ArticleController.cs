@@ -42,6 +42,21 @@ namespace WebShopApp.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult Post([FromBody] ArticleDTO value)
+        {
+            try
+            {
+                Article res = _articleService.Create(DTOMapper.ArticleDTO_to_Article(value));
+                return Ok(DTOMapper.Article_To_ArticleDTO(res));
+            }
+            catch
+            {
+                return BadRequest("Something went wrong");
+
+            }
+        }
+
         // PUT api/<ArticleController>/5
         [HttpPut]
         public IActionResult Put([FromBody] ArticleDTO value)

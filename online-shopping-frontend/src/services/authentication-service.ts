@@ -4,10 +4,10 @@ class AuthenticationService {
 
     constructor(){}
 
-    backendApi = 'http://localhost:5000/api/user'
+    backendApi = import.meta.env.VITE_BACKEND_USER_API;
 
     login(data: any) {
-        return axios.post(this.backendApi + "/authenticate", data)
+        return axios.post(import.meta.env.VITE_BACKEND_USER_AUTHENTICATE_API, data)
     }
 
 }
