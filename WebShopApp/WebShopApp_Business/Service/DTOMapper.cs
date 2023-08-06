@@ -123,8 +123,6 @@ namespace WebShopApp_Business.Service
             return new OrderResponseDTO(
                 order.Id,
                 List_ArticleForOrder_to_ArticleDTO(order.Articles),
-                //order.StartTime.ToShortDateString() + " " + order.StartTime.ToShortTimeString(),
-                //order.EndTime.ToShortDateString() + " " + order.EndTime.ToShortTimeString(),
                 order.StartTime.ToString("yyyy-MM-dd HH:mm:ss"),
                 order.EndTime.ToString("yyyy-MM-dd HH:mm:ss"),
                 order.Comment,

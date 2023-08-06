@@ -15,5 +15,7 @@ namespace WebShopApp_Business
         public IEnumerable<Order> GetAllWithArticles();
         public Order Create(Order order);
         public Order Update(int id, Order order);
+        public void Delete(int id);
+
     }
 }

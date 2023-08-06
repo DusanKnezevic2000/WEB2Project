@@ -1,16 +1,12 @@
-import { useState } from "react";
-import { AiOutlineConsoleSql } from "react-icons/ai";
-import ArticleDTO from "../../DTO/ArticleDTO";
 import OrderDTO from "../../DTO/OrderDTO";
-import Order from "../../model/Order";
-import orderService from "../../services/order-service";
 import Articles from "../Articles";
 
 interface Props {
   orders: OrderDTO[];
+  cancelOrder: (id: number) => void;
 }
 
-const Orders = ({ orders }: Props) => {
+const Orders = ({ orders, cancelOrder }: Props) => {
   const isCancellable = (date: string) => {
     const newDate = new Date(date);
     newDate.setHours(newDate.getHours() + 1);
@@ -89,6 +85,7 @@ const Orders = ({ orders }: Props) => {
                         <button
                           className="btn btn-lg btn-danger"
                           style={{ marginTop: "2%" }}
+                          onClick={() => cancelOrder(order.id)}
                         >
                           Cancel Order
                         </button>

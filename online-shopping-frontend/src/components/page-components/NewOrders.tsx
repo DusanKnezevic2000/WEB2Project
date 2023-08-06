@@ -35,9 +35,19 @@ const NewOrders = () => {
     }
   }, []);
 
+  const cancelOrder = (id: number) => {
+    orderService
+      .delete(id)
+      .then((response) => {
+        console.log(response.data);
+        setOrders(orders.filter((order) => order.id !== id));
+      })
+      .catch((error) => console.log(error.response.data));
+  };
+
   return (
     <div>
-      <Orders orders={orders} />
+      <Orders orders={orders} cancelOrder={cancelOrder} />
     </div>
   );
 };

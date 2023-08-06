@@ -11,6 +11,8 @@ namespace WebShopApp_Data
     {
         IEnumerable<Order> GetAllCustomerOrders(int id);
         IEnumerable<Order> GetAllWithArticles();
+        Order GetByIdWithArticles(int id);
+
 
     }
 }

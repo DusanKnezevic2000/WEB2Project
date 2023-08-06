@@ -180,8 +180,17 @@ namespace WebShopApp.Controllers
 
         // DELETE api/<OrderController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            try
+            {
+                _orderService.Delete(id);
+                return Ok(true);
+            }
+            catch
+            {
+                return BadRequest(false);
+            }
         }
     }
 }

@@ -23,5 +23,9 @@ namespace WebShopApp_Data.Repositories
         {
             return _dbContext.Set<Order>().Include(o => o.Articles);
         }
+        public Order GetByIdWithArticles(int id)
+        {
+            return _dbContext.Set<Order>().Include(o => o.Articles).FirstOrDefault(o => o.Id == id);
+        }
     }
 }
