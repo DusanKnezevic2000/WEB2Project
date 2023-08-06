@@ -5,6 +5,9 @@ import Articles from "../Articles";
 import ArticleDTO from "../../DTO/ArticleDTO";
 import articleService from "../../services/article-service";
 import { CanceledError } from "../../services/api-client";
+import Swal from "sweetalert2";
+import authGuardService from "../../services/auth-guard-service";
+import { useNavigate } from "react-router-dom";
 
 const AddArticle = () => {
   let [articles, setArticles] = useState<ArticleDTO[]>([]);
@@ -45,14 +48,18 @@ const AddArticle = () => {
     image: false,
   });
 
+  const navigate = useNavigate();
   useEffect(() => {
-    const { request, cancel } = articleService.getAll<ArticleDTO>();
-    request
+    if (!authGuardService.isUserLoggedIn()) navigate("/login");
+    if (!authGuardService.isSalesman() || !authGuardService.isApproved()) navigate("/profile");
+
+    articleService
+      .getById(parseInt(localStorage.getItem("id")))
       .then((response) => {
         setArticles(response.data);
       })
       .catch((error) => {
-        if (error instanceof CanceledError) return () => cancel;
+        console.log(error.response.data);
       });
   }, []);
 
@@ -76,9 +83,15 @@ const AddArticle = () => {
       .delete(id)
       .then((response) => {
         console.log(response.data);
-        if (response.data === true)
+        if (response.data === true) {
           setArticles(articles.filter((a) => a.id !== id));
-        else {
+          Swal.fire({
+            icon: "success",
+            title: "Article has been deleted successfully.",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        } else {
           console.log("Something went wrong");
         }
       })
@@ -217,6 +230,12 @@ const AddArticle = () => {
             return obj;
           });
           setArticles(updatedArticles);
+          Swal.fire({
+            icon: "success",
+            title: "Article has been updated successfully.",
+            showConfirmButton: false,
+            timer: 1500,
+          });
         })
         .catch((error) => console.log(error));
       document.getElementById("editClose")?.click();
@@ -234,6 +253,12 @@ const AddArticle = () => {
         .then((response) => {
           console.log(response.data);
           setArticles((articles) => [...articles, response.data]);
+          Swal.fire({
+            icon: "success",
+            title: "Article has been added successfully.",
+            showConfirmButton: false,
+            timer: 1500,
+          });
         })
         .catch((error) => console.log(error));
       document.getElementById("addClose")?.click();

@@ -9,9 +9,9 @@ import orderService from "../../services/order-service";
 import { useNavigate } from "react-router-dom";
 import articleService from "../../services/article-service";
 import { CanceledError } from "../../services/api-client";
+import authGuardService from "../../services/auth-guard-service";
 
 const NewOrder = () => {
-  const navigate = useNavigate();
   let [cart, setCart] = useState<ArticleDTO[]>([]);
   let [articles, setArticles] = useState<ArticleDTO[]>([]);
   const [order, setOrder] = useState<Order>({
@@ -21,7 +21,10 @@ const NewOrder = () => {
     comment: "",
     price: 0,
   });
+  const navigate = useNavigate();
   useEffect(() => {
+    if (!authGuardService.isUserLoggedIn()) navigate("/login");
+    if (!authGuardService.isCustomer()) navigate("/profile");
     const { request, cancel } = articleService.getAll<ArticleDTO>();
     request
       .then((response) => {
@@ -41,6 +44,17 @@ const NewOrder = () => {
         .filter((item) => item.id !== id)
         .reduce((acc, item) => item.price * item.quantity + acc, 0),
     });
+  };
+
+  const refreshPageContent = () => {
+    const { request, cancel } = articleService.getAll<ArticleDTO>();
+    request
+      .then((response) => {
+        setArticles(response.data);
+      })
+      .catch((error) => {
+        if (error instanceof CanceledError) return () => cancel;
+      });
   };
 
   const submitOrder = () => {
@@ -68,8 +82,9 @@ const NewOrder = () => {
           showConfirmButton: false,
           timer: 1500,
         });
-
-        //navigate("/newOrder");
+        document.getElementById("cartClose")?.click();
+        refreshPageContent();
+        setCart([]);
       });
     }
   };
@@ -176,6 +191,7 @@ const NewOrder = () => {
                 className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
+                id="cartClose"
               ></button>
             </div>
             <div className="modal-body">
@@ -242,10 +258,11 @@ const NewOrder = () => {
             </div>
             <div className="modal-footer">
               <h4 style={{ marginRight: "12%" }}>
-                Total: ${" "}
+                Total: $
                 {cart
                   .reduce((acc, item) => item.price * item.quantity + acc, 0)
-                  .toFixed(2)}
+                  .toFixed(2)}{" "}
+                + 20.00 (Delivery fee)
               </h4>
               <button
                 type="button"

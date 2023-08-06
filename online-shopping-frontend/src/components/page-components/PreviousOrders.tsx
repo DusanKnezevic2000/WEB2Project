@@ -1,13 +1,22 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import OrderDTO from "../../DTO/OrderDTO";
 import { CanceledError } from "../../services/api-client";
+import authGuardService from "../../services/auth-guard-service";
 import orderService, { orderHelpService } from "../../services/order-service";
-import Orders from "./Orders";
+import Orders from "../Orders";
 
 const PreviousOrders = () => {
   const [orders, setOrders] = useState<OrderDTO[]>([]);
 
+  const navigate = useNavigate();
   useEffect(() => {
+    if (!authGuardService.isUserLoggedIn()) navigate("/login");
+    if (
+      (!authGuardService.isSalesman() && !authGuardService.isCustomer()) ||
+      !authGuardService.isApproved()
+    )
+      navigate("/profile");
     if (localStorage.getItem("role") === "Customer") {
       const { request, cancel } = orderHelpService.getCustomerOrders(
         parseInt(localStorage.getItem("id"))
@@ -37,7 +46,7 @@ const PreviousOrders = () => {
 
   return (
     <div>
-      <Orders orders={orders} />
+      <Orders orders={orders} ordersType="previous" />
     </div>
   );
 };

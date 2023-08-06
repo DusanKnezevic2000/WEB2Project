@@ -1,10 +1,19 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { RiFileUserFill } from "react-icons/ri";
-import User from "../model/User";
+import User from "../../model/User";
 import validator from "validator";
-import userService from "../services/user-service";
+import userService from "../../services/user-service";
+import { useNavigate } from "react-router-dom";
+import authGuardService from "../../services/auth-guard-service";
+import Swal from "sweetalert2";
 
-const RegistrationForm = () => {
+const Registration = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (authGuardService.isUserLoggedIn()) navigate("/profile");
+  }, []);
+
   const [registerErrors, setRegisterErrors] = useState({
     username: false,
     email: false,
@@ -52,25 +61,25 @@ const RegistrationForm = () => {
     let addressError = false;
     let roleError = false;
     let imageError = false;
-    if (registerInfo.username.length < 3) {
+    if (registerInfo.username.trim().length < 3) {
       usernameError = true;
     }
     if (!validator.isEmail(registerInfo.email)) {
       emailError = true;
     }
-    if (registerInfo.password.length < 6) {
+    if (registerInfo.password.trim().length < 6) {
       passwordError = true;
     }
     if (registerInfo.confirmPassword !== registerInfo.password) {
       confirmPasswordError = true;
     }
-    if (registerInfo.name.length === 0) {
+    if (registerInfo.name.trim().length === 0) {
       nameError = true;
     }
     if (registerInfo.dateOfBirth.length < 10) {
       dateOfBirthError = true;
     }
-    if (registerInfo.address.length < 6) {
+    if (registerInfo.address.trim().length < 6) {
       addressError = true;
     }
     if (registerInfo.role.length === 0) {
@@ -113,8 +122,24 @@ const RegistrationForm = () => {
       console.log(registerInfo);
       userService
         .create(registerInfo)
-        .then((response) => console.log(response.data))
-        .catch((error) => console.log(error.response.data));
+        .then((response) => {
+          console.log(response.data);
+          navigate("/login");
+          Swal.fire({
+            icon: "success",
+            title: "Registration successful.",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        })
+        .catch((error) => {
+          Swal.fire({
+            icon: "error",
+            title: error.response.data,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        });
     } else {
       console.log("NOT OK");
     }
@@ -144,7 +169,7 @@ const RegistrationForm = () => {
                     onChange={(event) => {
                       setRegisterInfo({
                         ...registerInfo,
-                        username: event.target.value.trim(),
+                        username: event.target.value,
                       });
                     }}
                     id="username"
@@ -167,7 +192,7 @@ const RegistrationForm = () => {
                     onChange={(event) => {
                       setRegisterInfo({
                         ...registerInfo,
-                        email: event.target.value.trim(),
+                        email: event.target.value,
                       });
                     }}
                     id="email"
@@ -232,7 +257,7 @@ const RegistrationForm = () => {
                     onChange={(event) => {
                       setRegisterInfo({
                         ...registerInfo,
-                        name: event.target.value.trim(),
+                        name: event.target.value,
                       });
                     }}
                     id="name"
@@ -276,7 +301,7 @@ const RegistrationForm = () => {
                     onChange={(event) => {
                       setRegisterInfo({
                         ...registerInfo,
-                        address: event.target.value.trim(),
+                        address: event.target.value,
                       });
                     }}
                     id="address"
@@ -348,4 +373,4 @@ const RegistrationForm = () => {
   );
 };
 
-export default RegistrationForm;
+export default Registration;

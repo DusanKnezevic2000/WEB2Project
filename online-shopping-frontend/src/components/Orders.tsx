@@ -1,16 +1,29 @@
-import OrderDTO from "../../DTO/OrderDTO";
-import Articles from "../Articles";
+import { useState } from "react";
+import OrderDTO from "../DTO/OrderDTO";
+import Articles from "./Articles";
 
 interface Props {
   orders: OrderDTO[];
-  cancelOrder: (id: number) => void;
+  cancelOrder?: (id: number) => void;
+  ordersType: "new" | "previous" | "all";
 }
 
-const Orders = ({ orders, cancelOrder }: Props) => {
+const Orders = ({ orders, cancelOrder, ordersType }: Props) => {
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+
   const isCancellable = (date: string) => {
     const newDate = new Date(date);
     newDate.setHours(newDate.getHours() + 1);
-    if (new Date() < newDate) {
+    if (new Date() < newDate && localStorage.getItem("role") !== "Admin") {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const isDelivered = (date: string) => {
+    const newDate = new Date(date);
+    if (new Date() > newDate) {
       return true;
     } else {
       return false;
@@ -24,7 +37,9 @@ const Orders = ({ orders, cancelOrder }: Props) => {
         <div className="row">
           <div className="col-sm-3">
             <div className="container-fluid">
-              <h3>Orders</h3>
+              {ordersType === "new" && <h3>New Orders</h3>}
+              {ordersType === "previous" && <h3>Previous Orders</h3>}
+              {ordersType === "all" && <h3>Orders</h3>}
               <hr />
               <div
                 id="list-example"
@@ -34,7 +49,14 @@ const Orders = ({ orders, cancelOrder }: Props) => {
                 {orders.map((order) => (
                   <a
                     key={order.id}
-                    className="list-group-item list-group-item-action"
+                    className={
+                      selectedIndex === order.id
+                        ? "list-group-item active"
+                        : "list-group-item"
+                    }
+                    onClick={() => {
+                      setSelectedIndex(order.id);
+                    }}
                     href={"#list-item-" + order.id}
                   >
                     <p>
@@ -79,7 +101,12 @@ const Orders = ({ orders, cancelOrder }: Props) => {
                       Address: {order.address} {" - Price: $"}
                       {order.price}
                     </p>
-                    {order.status}
+                    {order.status === "Cancelled" && <p>{order.status}</p>}
+                    {order.status === "Processing" &&
+                      !isDelivered(order.endTime) && <p>{order.status}</p>}
+                    {order.status === "Processing" &&
+                      isDelivered(order.endTime) && <p>Delivered</p>}
+
                     {isCancellable(order.startTime) && (
                       <p>
                         <button

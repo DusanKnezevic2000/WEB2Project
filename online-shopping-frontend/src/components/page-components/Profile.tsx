@@ -4,8 +4,11 @@ import Alert from "../Alert";
 import UserDTO from "../../DTO/UserDTO";
 import Swal from "sweetalert2";
 import userService from "../../services/user-service";
+import authGuardService from "../../services/auth-guard-service";
+import { useNavigate } from "react-router";
 
 const Profile = () => {
+
   const [editErrors, setEditErrors] = useState({
     name: false,
     username: false,
@@ -24,11 +27,14 @@ const Profile = () => {
     image: "",
     status: "",
   });
-
+  
+  const navigate = useNavigate();
   useEffect(() => {
-    console.log(localStorage.getItem("user")?.slice(6, 7));
+    if (!authGuardService.isUserLoggedIn()) {
+      navigate("/login");
+    }
     userService
-      .getById(localStorage.getItem("user")?.slice(6, 7))
+      .getById(parseInt(localStorage.getItem("id")))
       .then((response) => {
         setUser({
           id: response.data.id,

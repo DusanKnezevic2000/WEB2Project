@@ -78,7 +78,7 @@ namespace WebShopApp.Controllers
             try
             {
                 List<OrderResponseDTO> ordersDto = new List<OrderResponseDTO>();
-                List<Order> orders = _orderService.GetAll().ToList();
+                List<Order> orders = _orderService.GetAllWithArticles().ToList();
                 foreach (Order order in orders)
                 {
                     if (order.EndTime < DateTime.Now && order.Status != OrderStatus.Cancelled)
@@ -133,7 +133,7 @@ namespace WebShopApp.Controllers
             try
             {
                 List<OrderResponseDTO> ordersDto = new List<OrderResponseDTO>();
-                List<Order> orders = _orderService.GetAll().ToList();
+                List<Order> orders = _orderService.GetAllWithArticles().ToList();
                 foreach (Order order in orders)
                 {
                     if (order.EndTime < DateTime.Now && order.StartTime > DateTime.Now && order.Status != OrderStatus.Cancelled)

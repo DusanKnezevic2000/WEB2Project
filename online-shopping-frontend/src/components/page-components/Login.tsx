@@ -3,6 +3,10 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RiLoginBoxFill } from "react-icons/ri";
 import authService from "../../services/authentication-service";
+import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
+import authGuardService from "../../services/auth-guard-service";
+import { useEffect } from "react";
 
 const schema = z.object({
   email: z.string().email({ message: "E-mail is not valid" }),
@@ -14,6 +18,12 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const Login = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (authGuardService.isUserLoggedIn()) navigate("/profile");
+  }, []);
+
   const {
     register,
     handleSubmit,
@@ -30,8 +40,16 @@ const Login = () => {
         localStorage.setItem("role", response.data.role);
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("status", response.data.status);
+        window.location.reload();
       })
-      .catch((error) => console.log(error.response.data));
+      .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: error.response.data,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      });
   };
 
   return (

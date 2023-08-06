@@ -22,6 +22,7 @@ namespace WebShopApp_Business.Service
         public Order Create(Order order)
         {
             UpdateArticleAmount(order);
+            order.Price += 20;
             return _orderRepository.Insert(order);
         }
 

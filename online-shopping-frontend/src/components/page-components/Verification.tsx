@@ -4,6 +4,9 @@ import articleHttpService from "../../services/article-http-service";
 import verificationService from "../../services/verification-service";
 import Alert from "../Alert";
 import UserDTO from "../../DTO/UserDTO";
+import Swal from "sweetalert2";
+import authGuardService from "../../services/auth-guard-service";
+import { useNavigate } from "react-router-dom";
 
 interface VerificationRequest {
   id: number;
@@ -24,7 +27,10 @@ const Verification = () => {
     ...verificationRequests,
   ]);
 
+  const navigate = useNavigate();
   useEffect(() => {
+    if (!authGuardService.isUserLoggedIn()) navigate("/login");
+    if (!authGuardService.isAdmin()) navigate("/profile");
     const { request, cancel } = verificationService.getAll();
     request
       .then((response) => {
@@ -73,6 +79,12 @@ const Verification = () => {
             }
             return req;
           });
+          Swal.fire({
+            icon: "success",
+            title: "User approved successfully.",
+            showConfirmButton: false,
+            timer: 1500,
+          });
           console.log(tab);
           setAllVerificationRequests([...newState]);
           if (tab === "all") {
@@ -101,6 +113,12 @@ const Verification = () => {
           });
           console.log(tab);
           setAllVerificationRequests([...newState]);
+          Swal.fire({
+            icon: "success",
+            title: "User rejected successfully.",
+            showConfirmButton: false,
+            timer: 1500,
+          });
           if (tab === "all") {
             setVerificationRequests([...newState]);
           } else {
