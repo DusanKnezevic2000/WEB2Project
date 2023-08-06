@@ -1,43 +1,25 @@
 import { useState } from "react";
+import { AiOutlineConsoleSql } from "react-icons/ai";
 import ArticleDTO from "../../DTO/ArticleDTO";
+import OrderDTO from "../../DTO/OrderDTO";
+import Order from "../../model/Order";
+import orderService from "../../services/order-service";
 import Articles from "../Articles";
 
-const Orders = () => {
-  let [articles, setArticles] = useState<ArticleDTO[]>([
-    {
-      id: 1,
-      name: "name1",
-      price: 1,
-      quantity: 1,
-      description: "desc1",
-      image:
-        "https://www.idealstandard.rs/-/media/project/ideal-standard/commerce-websites/shared-website/default-fallback-images/product-tile/product_image_placeholder.png",
-    },
-    {
-      id: 2,
-      name: "name2",
-      price: 2,
-      quantity: 2,
-      description: "desc2",
-      image: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-    },
-    {
-      id: 3,
-      name: "name3",
-      price: 3,
-      quantity: 3,
-      description: "desc3",
-      image: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-    },
-    {
-      id: 4,
-      name: "name3",
-      price: 3,
-      quantity: 3,
-      description: "desc3",
-      image: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-    },
-  ]);
+interface Props {
+  orders: OrderDTO[];
+}
+
+const Orders = ({ orders }: Props) => {
+  const isCancellable = (date: string) => {
+    const newDate = new Date(date);
+    newDate.setHours(newDate.getHours() + 1);
+    if (new Date() < newDate) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   return (
     <>
@@ -51,32 +33,28 @@ const Orders = () => {
               <div
                 id="list-example"
                 className="list-group"
-                style={{ overflow: "y: scroll" }}
+                style={{ overflowY: "scroll", height: "750px" }}
               >
-                <a
-                  className="list-group-item list-group-item-action"
-                  href="#list-item-1"
-                >
-                  Item 1
-                </a>
-                <a
-                  className="list-group-item list-group-item-action"
-                  href="#list-item-2"
-                >
-                  Item 2
-                </a>
-                <a
-                  className="list-group-item list-group-item-action"
-                  href="#list-item-3"
-                >
-                  Item 3
-                </a>
-                <a
-                  className="list-group-item list-group-item-action"
-                  href="#list-item-4"
-                >
-                  Item 4
-                </a>
+                {orders.map((order) => (
+                  <a
+                    key={order.id}
+                    className="list-group-item list-group-item-action"
+                    href={"#list-item-" + order.id}
+                  >
+                    <p>
+                      Customer: {order.customer.name} -{" "}
+                      {order.customer.username}
+                    </p>
+                    <p>
+                      Creation time: {order.startTime} - Delivery time:{" "}
+                      {order.endTime}
+                    </p>
+                    <p>
+                      Address: {order.address} {" - Price: $"}
+                      {order.price}
+                    </p>
+                  </a>
+                ))}
               </div>
             </div>
           </div>
@@ -90,20 +68,36 @@ const Orders = () => {
               className="overflow-auto"
               style={{ overflowY: "scroll", height: "750px" }}
             >
-              <h4 id="list-item-1">Item 1</h4>
-              <Articles articles={articles} articleButtons="none" />
-              <h4 className="text-center" id="list-item-2">
-                Item 2
-              </h4>
-              <Articles articles={articles} articleButtons="none" />
-              <h4 className="text-center" id="list-item-3">
-                Item 3
-              </h4>
-              <Articles articles={articles} articleButtons="none" />
-              <h4 className="text-center" id="list-item-4">
-                Item 4
-              </h4>
-              <Articles articles={articles} articleButtons="none" />
+              {orders.map((order) => (
+                <div key={order.id}>
+                  <h4 id={"list-item-" + order.id}>
+                    <p>
+                      Customer: {order.customer.name} -{" "}
+                      {order.customer.username}
+                    </p>
+                    <p>
+                      Creation time: {order.startTime} - Delivery time:{" "}
+                      {order.endTime}
+                    </p>
+                    <p>
+                      Address: {order.address} {" - Price: $"}
+                      {order.price}
+                    </p>
+                    {order.status}
+                    {isCancellable(order.startTime) && (
+                      <p>
+                        <button
+                          className="btn btn-lg btn-danger"
+                          style={{ marginTop: "2%" }}
+                        >
+                          Cancel Order
+                        </button>
+                      </p>
+                    )}
+                  </h4>
+                  <Articles articles={order.articles} articleButtons="none" />
+                </div>
+              ))}
             </div>
           </div>
         </div>

@@ -25,7 +25,11 @@ const Login = () => {
       .login(data)
       .then((response) => {
         console.log(response.data);
-        localStorage.setItem("user", JSON.stringify(response.data));
+        localStorage.setItem("id", response.data.id);
+        localStorage.setItem("username", response.data.username);
+        localStorage.setItem("role", response.data.role);
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("status", response.data.status);
       })
       .catch((error) => console.log(error.response.data));
   };

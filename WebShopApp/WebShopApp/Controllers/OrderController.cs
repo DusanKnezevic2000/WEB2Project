@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using WebShopApp_Business;
 using WebShopApp_Business.DTO;
 using WebShopApp_Business.Service;
@@ -13,25 +16,146 @@ namespace WebShopApp.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly IArticleForOrderService _articleForOrderService;
+        private readonly IUserService _userService;
 
-        public OrderController(IOrderService orderService, IArticleForOrderService articleForOrderService)
+        public OrderController(IOrderService orderService, IArticleForOrderService articleForOrderService, IUserService userService)
         {
             _orderService = orderService;
             _articleForOrderService = articleForOrderService;
+            _userService = userService;
         }
 
         // GET: api/<OrderController>
         [HttpGet]
-        public IEnumerable<Order> GetAll()
+        public IActionResult GetAll()
         {
-            return _orderService.GetAll();
+            try
+            {
+                List<OrderResponseDTO> ordersDto = new List<OrderResponseDTO>();
+                List<Order> orders = _orderService.GetAllWithArticles().ToList();
+                foreach (Order order in orders)
+                {
+                    OrderResponseDTO current = DTOMapper.Order_To_OrderResponseDTO(order);
+                    current.Customer = DTOMapper.User_To_UserDTO_Safe(_userService.GetUser(order.CustomerId));
+                    ordersDto.Add(current);
+                }
+                return Ok(ordersDto);
+            }
+            catch 
+            {
+                return BadRequest("Something went wrong.");
+            }
         }
 
-        // GET api/<OrderController>/5
-        [HttpGet("{id}")]
-        public Order GetById(int id)
+        // GET: api/<OrderController>
+        [HttpGet("[action]/{id}")]
+        public IActionResult Customer(int id)
         {
-            return _orderService.GetById(id);
+            try
+            {
+                List<OrderResponseDTO> ordersDto = new List<OrderResponseDTO>();
+                List<Order> orders = _orderService.GetAllCustomerOrders(id).ToList();
+                foreach (Order order in orders)
+                {
+                    if (order.EndTime < DateTime.Now && order.Status != OrderStatus.Cancelled)
+                    {
+                        OrderResponseDTO current = DTOMapper.Order_To_OrderResponseDTO(order);
+                        current.Customer = DTOMapper.User_To_UserDTO_Safe(_userService.GetUser(order.CustomerId));
+                        ordersDto.Add(current);
+                    }
+                }
+                return Ok(ordersDto);
+            }
+            catch
+            {
+                return BadRequest("Something went wrong.");
+            }
+        }
+
+        [HttpGet("[action]/{id}")]
+        public IActionResult Salesman(int id)
+        {
+            try
+            {
+                List<OrderResponseDTO> ordersDto = new List<OrderResponseDTO>();
+                List<Order> orders = _orderService.GetAll().ToList();
+                foreach (Order order in orders)
+                {
+                    if (order.EndTime < DateTime.Now && order.Status != OrderStatus.Cancelled)
+                    {
+                        foreach (ArticleForOrder article in order.Articles)
+                        {
+                            if (article.SalesmanId == id)
+                            {
+                                OrderResponseDTO current = DTOMapper.Order_To_OrderResponseDTO(order);
+                                current.Customer = DTOMapper.User_To_UserDTO_Safe(_userService.GetUser(order.CustomerId));
+                                ordersDto.Add(current);
+                                break;
+                            }
+                        }
+                    }
+                }
+                return Ok(ordersDto);
+            }
+            catch
+            {
+                return BadRequest("Something went wrong.");
+            }
+        }
+
+        [HttpGet("customerNew/{id}")]
+        public IActionResult CustomerNew(int id)
+        {
+            try
+            {
+                List<OrderResponseDTO> ordersDto = new List<OrderResponseDTO>();
+                List<Order> orders = _orderService.GetAllCustomerOrders(id).ToList();
+                foreach (Order order in orders)
+                {
+                    if (order.EndTime > DateTime.Now && order.StartTime < DateTime.Now && order.Status != OrderStatus.Cancelled)
+                    {
+                        OrderResponseDTO current = DTOMapper.Order_To_OrderResponseDTO(order);
+                        current.Customer = DTOMapper.User_To_UserDTO_Safe(_userService.GetUser(order.CustomerId));
+                        ordersDto.Add(current);
+                    }
+                }
+                return Ok(ordersDto);
+            }
+            catch
+            {
+                return BadRequest("Something went wrong.");
+            }
+        }
+
+        [HttpGet("salesmanNew/{id}")]
+        public IActionResult Salesmannew(int id)
+        {
+            try
+            {
+                List<OrderResponseDTO> ordersDto = new List<OrderResponseDTO>();
+                List<Order> orders = _orderService.GetAll().ToList();
+                foreach (Order order in orders)
+                {
+                    if (order.EndTime < DateTime.Now && order.StartTime > DateTime.Now && order.Status != OrderStatus.Cancelled)
+                    {
+                        foreach (ArticleForOrder article in order.Articles)
+                        {
+                            if (article.SalesmanId == id)
+                            {
+                                OrderResponseDTO current = DTOMapper.Order_To_OrderResponseDTO(order);
+                                current.Customer = DTOMapper.User_To_UserDTO_Safe(_userService.GetUser(order.CustomerId));
+                                ordersDto.Add(current);
+                                break;
+                            }
+                        }
+                    }
+                }
+                return Ok(ordersDto);
+            }
+            catch
+            {
+                return BadRequest("Something went wrong.");
+            }
         }
 
         // POST api/<OrderController>

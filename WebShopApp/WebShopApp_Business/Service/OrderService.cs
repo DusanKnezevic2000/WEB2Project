@@ -50,5 +50,15 @@ namespace WebShopApp_Business.Service
                 _articleRepository.Update(article);
             }
         }
+
+        public IEnumerable<Order> GetAllCustomerOrders(int id)
+        {
+            return _orderRepository.GetAllCustomerOrders(id);
+        }
+
+        public IEnumerable<Order> GetAllWithArticles()
+        {
+            return _orderRepository.GetAllWithArticles();
+        }
     }
 }

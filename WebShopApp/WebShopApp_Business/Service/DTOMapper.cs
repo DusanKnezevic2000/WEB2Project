@@ -22,7 +22,7 @@ namespace WebShopApp_Business.Service
                 article.Image);
         }
 
-        public static ArticleDTO c(ArticleForOrder article)
+        public static ArticleDTO ArticleForOrder_To_ArticleDTO(ArticleForOrder article)
         {
             return new ArticleDTO(
                 article.OriginalArticleId,
@@ -123,8 +123,10 @@ namespace WebShopApp_Business.Service
             return new OrderResponseDTO(
                 order.Id,
                 List_ArticleForOrder_to_ArticleDTO(order.Articles),
-                order.StartTime.ToShortTimeString(),
-                order.EndTime.ToShortTimeString(),
+                //order.StartTime.ToShortDateString() + " " + order.StartTime.ToShortTimeString(),
+                //order.EndTime.ToShortDateString() + " " + order.EndTime.ToShortTimeString(),
+                order.StartTime.ToString("yyyy-MM-dd HH:mm:ss"),
+                order.EndTime.ToString("yyyy-MM-dd HH:mm:ss"),
                 order.Comment,
                 order.Address,
                 order.Price,
@@ -170,6 +172,16 @@ namespace WebShopApp_Business.Service
                 usersDto.Add(User_To_UserDTO_Safe(user));
             }
             return usersDto;
+        }
+
+        public static List<OrderResponseDTO> List_Order_to_OrderResponseDTO(List<Order> orders)
+        {
+            List<OrderResponseDTO> ordersDto = new List<OrderResponseDTO>();
+            foreach (Order order in orders)
+            {
+                ordersDto.Add(Order_To_OrderResponseDTO(order));
+            }
+            return ordersDto;
         }
     }
 }

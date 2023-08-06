@@ -4,31 +4,31 @@ import ArticleDTO from "../../DTO/ArticleDTO";
 import Articles from "../Articles";
 import { AiFillDelete } from "react-icons/ai";
 import { BsFillCartFill } from "react-icons/bs";
-import articleHttpService from "../../services/article-http-service";
 import Order from "../../model/Order";
 import orderService from "../../services/order-service";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import articleService from "../../services/article-service";
+import { CanceledError } from "../../services/api-client";
 
 const NewOrder = () => {
   const navigate = useNavigate();
   let [cart, setCart] = useState<ArticleDTO[]>([]);
   let [articles, setArticles] = useState<ArticleDTO[]>([]);
   const [order, setOrder] = useState<Order>({
-    customerId: localStorage.getItem("user")?.slice(6, 7),
+    customerId: localStorage.getItem("id"),
     address: "",
     articles: [],
     comment: "",
     price: 0,
   });
   useEffect(() => {
-    articleHttpService
-      .getAll()
-      .then((res) => {
-        setArticles(res.data);
-        console.log(res.data);
+    const { request, cancel } = articleService.getAll<ArticleDTO>();
+    request
+      .then((response) => {
+        setArticles(response.data);
       })
       .catch((error) => {
-        console.log(error);
+        if (error instanceof CanceledError) return () => cancel;
       });
   }, []);
 
@@ -61,16 +61,16 @@ const NewOrder = () => {
     } else {
       console.log(order);
       orderService.create(order).then((response) => {
-      console.log(response.data);
-      Swal.fire({
-        icon: "success",
-        title: "Your order has been sent.",
-        showConfirmButton: false,
-        timer: 1500,
-      });
+        console.log(response.data);
+        Swal.fire({
+          icon: "success",
+          title: "Your order has been sent.",
+          showConfirmButton: false,
+          timer: 1500,
+        });
 
-      //navigate("/newOrder");
-       });
+        //navigate("/newOrder");
+      });
     }
   };
 

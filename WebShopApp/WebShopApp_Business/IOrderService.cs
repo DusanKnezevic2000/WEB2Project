@@ -11,6 +11,8 @@ namespace WebShopApp_Business
     {
         public Order GetById(int id);
         public IEnumerable<Order> GetAll();
+        public IEnumerable<Order> GetAllCustomerOrders(int id);
+        public IEnumerable<Order> GetAllWithArticles();
         public Order Create(Order order);
         public Order Update(int id, Order order);
     }

@@ -41,7 +41,7 @@ const Articles = ({
                 </div>
                 <ul className="list-group list-group-flush">
                   <li className="list-group-item text-white bg-primary">
-                    Available quantity: {article.quantity}
+                    Quantity: {article.quantity}
                   </li>
                   <li className="list-group-item text-white bg-primary">
                     Price: ${article.price}{" "}
