@@ -7,6 +7,8 @@ import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import authGuardService from "../../services/auth-guard-service";
 import { useEffect } from "react";
+import { LoginSocialGoogle } from "reactjs-social-login";
+import { GoogleLoginButton } from "react-social-login-buttons";
 
 const schema = z.object({
   email: z.string().email({ message: "E-mail is not valid" }),
@@ -50,6 +52,14 @@ const Login = () => {
           timer: 1500,
         });
       });
+  };
+
+  const responseFacebook = (response: any) => {
+    console.log(response);
+  };
+
+  const componentClicked = (data: any) => {
+    console.log(data);
   };
 
   return (
@@ -107,6 +117,23 @@ const Login = () => {
           </div>
         </div>
       </form>
+      <br /> <br />
+      <div className="container-fluid text-center">
+        <LoginSocialGoogle
+          client_id="238674901787-7mdhlbfsbsmj0ce6e8b40010n10224m3.apps.googleusercontent.com"
+          scope="openid profile email"
+          discoveryDocs="claims_supported"
+          access_type="offline"
+          onResolve={({ provider, data }) => {
+            console.log(provider, data);
+          }}
+          onReject={(error) => {
+            console.log(error);
+          }}
+        >
+          <GoogleLoginButton />
+        </LoginSocialGoogle>
+      </div>
     </>
   );
 };
