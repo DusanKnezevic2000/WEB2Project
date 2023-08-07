@@ -42,6 +42,40 @@ namespace WebShopApp.Controllers
             return Ok(new LoginResponseDTO(user, jwtToken));
         }
 
+        [AllowAnonymous]
+        [HttpPost("[action]")]
+        public IActionResult AuthenticateGoogle(GoogleLoginDTO info)
+        {
+            try
+            {
+                var user = _userService.GetByEmail(info.Email);
+
+                if (user == null)
+                {
+                    _userService.RegisterUser(new User(
+                        info.Email.Split("@")[0],
+                        info.Email,
+                        "",
+                        info.Name,
+                        DateTime.Now,
+                        "",
+                        Role.Customer,
+                        info.Picture,
+                        VerificationStatus.Approved
+                        ));
+                    user = _userService.GetByEmail(info.Email);
+                    return Ok(new LoginResponseDTO(user, info.Token));
+                }
+                // authentication successful so generate jwt token
+                var jwtToken = _jwtUtils.GenerateJwtToken(user);
+                return Ok(new LoginResponseDTO(user, jwtToken));
+            }
+            catch
+            {
+                return BadRequest("Something went wrong.");
+            }
+        }
+
         [HttpGet]
         //[Authorize(Role.Admin)]
         public List<UserDTO> GetAll()

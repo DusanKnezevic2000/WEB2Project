@@ -10,6 +10,10 @@ class AuthenticationService {
         return axios.post(import.meta.env.VITE_BACKEND_USER_AUTHENTICATE_API, data)
     }
 
+    googleLogin(data: any) {
+        return axios.post(import.meta.env.VITE_BACKEND_USER_GOOGLE_API, data)
+    }
+
 }
     
 const authService = new AuthenticationService()

@@ -54,12 +54,34 @@ const Login = () => {
       });
   };
 
-  const responseFacebook = (response: any) => {
-    console.log(response);
-  };
-
-  const componentClicked = (data: any) => {
+  const googleLogin = (data: any) => {
     console.log(data);
+    const loginInfo = {
+      token: data.access_token,
+      email: data.email,
+      name: data.name,
+      picture: data.picture,
+    };
+    console.log(loginInfo);
+    authService
+      .googleLogin(loginInfo)
+      .then((response) => {
+        console.log(response.data);
+        localStorage.setItem("id", response.data.id);
+        localStorage.setItem("username", response.data.username);
+        localStorage.setItem("role", response.data.role);
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("status", response.data.status);
+        window.location.reload();
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: error.response.data,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      });
   };
 
   return (
@@ -69,7 +91,6 @@ const Login = () => {
           <br />
           <br />
           <h1>Log In</h1>
-          <br />
           <RiLoginBoxFill size="25%" color="#0D6EFD" />
         </div>
         <div className="container">
@@ -117,22 +138,33 @@ const Login = () => {
           </div>
         </div>
       </form>
-      <br /> <br />
+      <br />
       <div className="container-fluid text-center">
-        <LoginSocialGoogle
-          client_id="238674901787-7mdhlbfsbsmj0ce6e8b40010n10224m3.apps.googleusercontent.com"
-          scope="openid profile email"
-          discoveryDocs="claims_supported"
-          access_type="offline"
-          onResolve={({ provider, data }) => {
-            console.log(provider, data);
-          }}
-          onReject={(error) => {
-            console.log(error);
-          }}
-        >
-          <GoogleLoginButton />
-        </LoginSocialGoogle>
+        <div className="row">
+          <div className="col-sm-4"></div>
+          <div className="col-sm-4">
+            <LoginSocialGoogle
+              client_id={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+              scope="openid profile email"
+              discoveryDocs="claims_supported"
+              access_type="offline"
+              onResolve={({ data }) => {
+                googleLogin(data);
+              }}
+              onReject={(error) => {
+                Swal.fire({
+                  icon: "error",
+                  title: error,
+                  showConfirmButton: false,
+                  timer: 1500,
+                });
+              }}
+            >
+              <GoogleLoginButton />
+            </LoginSocialGoogle>
+          </div>
+          <div className="col-sm-4"></div>
+        </div>
       </div>
     </>
   );
