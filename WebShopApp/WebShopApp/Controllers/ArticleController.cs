@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Threading;
 using WebShopApp_Business;
 using WebShopApp_Business.DTO;
 using WebShopApp_Business.Service;
@@ -61,19 +63,26 @@ namespace WebShopApp.Controllers
         [HttpPut]
         public IActionResult Put([FromBody] ArticleDTO value)
         {
-            Article article = _articleService.GetById(value.Id);
-            
-            if (article != null)
+            try
             {
-                article.Quantity = value.Quantity;
-                article.Price = value.Price;
-                article.Name = value.Name;
-                article.Description = value.Description;
-                article.Image = value.Image;
-                _articleService.Update(article);
-                return Ok(DTOMapper.Article_To_ArticleDTO(article));
+                Article article = _articleService.GetById(value.Id);
+                //Thread.Sleep(5000);
+                if (article != null)
+                {
+                    article.Quantity = value.Quantity;
+                    article.Price = value.Price;
+                    article.Name = value.Name;
+                    article.Description = value.Description;
+                    article.Image = value.Image;
+                    _articleService.Update(article);
+                    return Ok(DTOMapper.Article_To_ArticleDTO(article));
+                }
+                return BadRequest("Article not found");
             }
-            return BadRequest("Article not found");
+            catch (DbUpdateConcurrencyException) 
+            {
+                return Conflict("Article is being accessed by a customer. Please, try again in a few moments.");
+            }
         }
 
         // DELETE api/<ArticleController>/5

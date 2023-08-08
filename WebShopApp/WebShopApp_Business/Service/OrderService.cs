@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WebShopApp_Data;
 using WebShopApp_Data.Models;
@@ -29,11 +30,14 @@ namespace WebShopApp_Business.Service
         public void Delete(int id)
         {
             Order o = _orderRepository.GetByIdWithArticles(id);
-            foreach (ArticleForOrder article in o.Articles) 
+            foreach (ArticleForOrder article in o.Articles)
             {
                 Article a = _articleRepository.GetById(article.OriginalArticleId);
-                a.Quantity += article.Quantity;
-                _articleRepository.Update(a);
+                if (a != null)
+                {
+                    a.Quantity += article.Quantity;
+                    _articleRepository.Update(a);
+                }
             }
             o.Status = OrderStatus.Cancelled;
             _orderRepository.Update(o);
@@ -57,11 +61,20 @@ namespace WebShopApp_Business.Service
 
         private void UpdateArticleAmount(Order order) 
         {
-            foreach(var orderArticle in order.Articles) 
+            foreach (var orderArticle in order.Articles)
             {
                 Article article = _articleRepository.GetById(orderArticle.OriginalArticleId);
-                article.Quantity -= orderArticle.Quantity;
-                _articleRepository.Update(article);
+                if (article != null)
+                {
+                    article.Quantity -= orderArticle.Quantity;
+                    if (article.Quantity < 0)
+                        throw new Exception();
+                    _articleRepository.Update(article);
+                }
+                else
+                {
+                    throw new Exception();
+                } 
             }
         }
 

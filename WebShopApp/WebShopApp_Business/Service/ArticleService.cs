@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WebShopApp_Data;
 using WebShopApp_Data.Models;
@@ -42,7 +43,8 @@ namespace WebShopApp_Business.Service
 
         public void Delete(int id)
         {
-            _articleRepository.Delete(GetById(id));
+            Article a = GetById(id);
+            _articleRepository.Delete(a);
         }
     }
 }

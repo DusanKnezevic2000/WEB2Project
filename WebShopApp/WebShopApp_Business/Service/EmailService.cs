@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Humanizer.Configuration;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -8,12 +10,17 @@ using System.Threading.Tasks;
 
 namespace WebShopApp_Business.Service
 {
-    public static class EmailService
+    public class EmailService
     {
-        public static void SendApproveEmail(string userEmail) 
+        private readonly IConfiguration _config;
+        public EmailService(IConfiguration config)
         {
-            string senderEmail = "";
-            string senderPassword = "";
+            _config = config;
+        }
+        public void SendApproveEmail(string userEmail) 
+        {
+            string senderEmail = _config.GetConnectionString("EmailAddress");
+            string senderPassword = _config.GetConnectionString("EmailPassword");
 
             MailMessage message = new MailMessage();
             message.From = new MailAddress(senderEmail);
@@ -31,10 +38,10 @@ namespace WebShopApp_Business.Service
             smtpClient.Send(message);
         }
 
-        public static void SendRejectEmail(string userEmail)
+        public void SendRejectEmail(string userEmail)
         {
-            string senderEmail = "";
-            string senderPassword = "";
+            string senderEmail = _config.GetConnectionString("EmailAddress");
+            string senderPassword = _config.GetConnectionString("EmailPassword");
 
             MailMessage message = new MailMessage();
             message.From = new MailAddress(senderEmail);

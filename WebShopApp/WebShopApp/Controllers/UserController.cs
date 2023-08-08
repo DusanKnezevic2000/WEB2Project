@@ -11,6 +11,7 @@ using WebShopApp_Business.Service;
 using System.Linq;
 using System.Xml.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace WebShopApp.Controllers
 {
@@ -20,11 +21,13 @@ namespace WebShopApp.Controllers
     {
         private readonly IJwtUtils _jwtUtils;
         private readonly IUserService _userService;
+        private readonly IConfiguration _config;
 
-        public UserController(IUserService userService, IJwtUtils jwtUtils)
+        public UserController(IUserService userService, IJwtUtils jwtUtils, IConfiguration config)
         {
             _userService = userService;
             _jwtUtils = jwtUtils;
+            _config = config;
         }
 
         [AllowAnonymous]
@@ -116,7 +119,8 @@ namespace WebShopApp.Controllers
             if (user != null) {
                 user.Status = VerificationStatus.Approved;
                 _userService.Update(user);
-                EmailService.SendApproveEmail(user.Email);
+                EmailService emailService = new EmailService(_config);
+                emailService.SendApproveEmail(user.Email);
                 return Ok(true);
             }
             return BadRequest(false);
@@ -131,7 +135,8 @@ namespace WebShopApp.Controllers
             {
                 user.Status = VerificationStatus.Denied;
                 _userService.Update(user);
-                EmailService.SendRejectEmail(user.Email);
+                EmailService emailService = new EmailService(_config);
+                emailService.SendApproveEmail(user.Email);
                 return Ok(true);
             }
             return BadRequest(false);
