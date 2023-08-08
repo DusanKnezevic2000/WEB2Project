@@ -137,7 +137,7 @@ namespace WebShopApp.Controllers
                 user.Status = VerificationStatus.Denied;
                 _userService.Update(user);
                 EmailService emailService = new EmailService(_config);
-                emailService.SendApproveEmail(user.Email);
+                emailService.SendRejectEmail(user.Email);
                 return Ok(true);
             }
             return BadRequest(false);
