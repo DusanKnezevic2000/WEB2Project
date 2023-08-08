@@ -51,7 +51,6 @@ const Profile = () => {
 
   const handleSubmit = () => {
     if (validateEdit()) {
-      console.log(user);
       userService
         .update(user)
         .then((response) => {

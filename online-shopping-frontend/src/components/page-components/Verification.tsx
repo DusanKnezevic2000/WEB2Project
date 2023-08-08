@@ -1,9 +1,7 @@
-import axios, { CanceledError } from "../../services/api-client";
-import React, { useEffect, useState } from "react";
-import articleHttpService from "../../services/article-http-service";
+import { CanceledError } from "../../services/api-client";
+import { useEffect, useState } from "react";
 import verificationService from "../../services/verification-service";
 import Alert from "../Alert";
-import UserDTO from "../../DTO/UserDTO";
 import Swal from "sweetalert2";
 import authGuardService from "../../services/auth-guard-service";
 import { useNavigate } from "react-router-dom";
@@ -85,12 +83,10 @@ const Verification = () => {
             showConfirmButton: false,
             timer: 1500,
           });
-          console.log(tab);
           setAllVerificationRequests([...newState]);
           if (tab === "all") {
             setVerificationRequests([...newState]);
           } else {
-            console.log("USAO");
             setVerificationRequests(
               [...newState].filter((vr) => vr.status === "Processing")
             );
@@ -111,7 +107,6 @@ const Verification = () => {
             }
             return req;
           });
-          console.log(tab);
           setAllVerificationRequests([...newState]);
           Swal.fire({
             icon: "success",

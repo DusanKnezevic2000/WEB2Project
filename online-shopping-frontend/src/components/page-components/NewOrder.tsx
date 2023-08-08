@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import ArticleDTO from "../../DTO/ArticleDTO";
 import Articles from "../Articles";
-import { AiFillDelete } from "react-icons/ai";
 import { BsFillCartFill } from "react-icons/bs";
 import Order from "../../model/Order";
 import orderService from "../../services/order-service";
@@ -73,25 +72,32 @@ const NewOrder = () => {
         timer: 1500,
       });
     } else {
-      console.log(order);
-      orderService.create(order).then((response) => {
-        console.log(response.data);
-        Swal.fire({
-          icon: "success",
-          title: "Your order has been sent.",
-          showConfirmButton: false,
-          timer: 1500,
+      orderService
+        .create(order)
+        .then((response) => {
+          Swal.fire({
+            icon: "success",
+            title: "Your order has been sent.",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          document.getElementById("cartClose")?.click();
+          refreshPageContent();
+          setCart([]);
+        })
+        .catch((error) => {
+          Swal.fire({
+            icon: "error",
+            title:
+              "Your order has not been sent. Please, refresh and try again.",
+            showConfirmButton: false,
+            timer: 1500,
+          });
         });
-        document.getElementById("cartClose")?.click();
-        refreshPageContent();
-        setCart([]);
-      });
     }
   };
 
   const addToCart = (id: number, wantedAmount: number) => {
-    console.log(articles);
-    console.log(id, wantedAmount);
     if (!isNaN(wantedAmount)) {
       const isFound = cart.some((element) => {
         if (element.id === id) {
@@ -110,7 +116,12 @@ const NewOrder = () => {
       } else {
         let item = { ...articles.find((article) => article.id === id) };
         if (item!.quantity < wantedAmount || wantedAmount <= 0) {
-          console.log("NONO");
+          Swal.fire({
+            icon: "error",
+            title: "Invalid quantity.",
+            showConfirmButton: false,
+            timer: 3000,
+          });
         } else {
           item!.quantity = wantedAmount;
           setCart((cart) => [...cart, item]);
@@ -213,11 +224,12 @@ const NewOrder = () => {
                       <td>{item.quantity}</td>
                       <td>${item.price}</td>
                       <td width="24%">
-                        <AiFillDelete
-                          size="15%"
-                          color="red"
+                        <button
+                          className="btn btn-danger"
                           onClick={() => removeFromCart(item.id)}
-                        />
+                        >
+                          Remove
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -234,7 +246,6 @@ const NewOrder = () => {
                       });
                     }}
                     id="comment"
-                    type="text"
                     className="form-control"
                     placeholder="Comment"
                   />
@@ -249,7 +260,6 @@ const NewOrder = () => {
                       });
                     }}
                     id="address"
-                    type="text"
                     className="form-control"
                     placeholder="Address"
                   />

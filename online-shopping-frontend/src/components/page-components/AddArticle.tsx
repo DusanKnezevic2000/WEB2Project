@@ -4,7 +4,6 @@ import { RiEditCircleFill } from "react-icons/ri";
 import Articles from "../Articles";
 import ArticleDTO from "../../DTO/ArticleDTO";
 import articleService from "../../services/article-service";
-import { CanceledError } from "../../services/api-client";
 import Swal from "sweetalert2";
 import authGuardService from "../../services/auth-guard-service";
 import { useNavigate } from "react-router-dom";
@@ -24,7 +23,7 @@ const AddArticle = () => {
 
   const [addArticleInfo, setAddArticleInfo] = useState<ArticleDTO>({
     id: 0,
-    salesmanId: -2, //set from login information
+    salesmanId: parseInt(localStorage.getItem("id")),
     quantity: 0,
     description: "",
     image: "",
@@ -51,7 +50,8 @@ const AddArticle = () => {
   const navigate = useNavigate();
   useEffect(() => {
     if (!authGuardService.isUserLoggedIn()) navigate("/login");
-    if (!authGuardService.isSalesman() || !authGuardService.isApproved()) navigate("/profile");
+    if (!authGuardService.isSalesman() || !authGuardService.isApproved())
+      navigate("/profile");
 
     articleService
       .getById(parseInt(localStorage.getItem("id")))
@@ -82,7 +82,6 @@ const AddArticle = () => {
     articleService
       .delete(id)
       .then((response) => {
-        console.log(response.data);
         if (response.data === true) {
           setArticles(articles.filter((a) => a.id !== id));
           Swal.fire({
@@ -92,7 +91,13 @@ const AddArticle = () => {
             timer: 1500,
           });
         } else {
-          console.log("Something went wrong");
+          Swal.fire({
+            icon: "error",
+            title:
+              "Someone is currently accessing this article, probably a customer. Page will refresh and you can try again.",
+            showConfirmButton: false,
+            timer: 1500,
+          });
         }
       })
       .catch((error) => {
@@ -208,12 +213,9 @@ const AddArticle = () => {
 
   const handleEditSubmit = () => {
     if (validateEdit()) {
-      console.log("OK");
-      console.log(editArticleInfo);
       articleService
         .update(editArticleInfo)
         .then((response) => {
-          console.log(response.data);
           const updatedArticles = articles.map((obj) => {
             // 👇️ if id equals 2, update country property
             if (obj.id === editArticleInfo.id) {
@@ -237,7 +239,17 @@ const AddArticle = () => {
             timer: 1500,
           });
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+          console.log(error);
+          if (error.code == "ERR_BAD_RESPONSE")
+            Swal.fire({
+              icon: "error",
+              title:
+                "Someone is currently accessing this article, probably a customer. Page will refresh and you can try again.",
+              showConfirmButton: false,
+              timer: 2500,
+            });
+        });
       document.getElementById("editClose")?.click();
     } else {
       console.log("NOT OK");
@@ -246,12 +258,9 @@ const AddArticle = () => {
 
   const handleAddSubmit = () => {
     if (validateAdd()) {
-      console.log("OK");
-      console.log(addArticleInfo);
       articleService
         .create(addArticleInfo)
         .then((response) => {
-          console.log(response.data);
           setArticles((articles) => [...articles, response.data]);
           Swal.fire({
             icon: "success",
@@ -555,7 +564,7 @@ const AddArticle = () => {
                       </div>
                       <div className="mb-1">
                         <label htmlFor="quantity" className="form-label">
-                          quantity
+                          Quantity
                         </label>
                         <input
                           value={editArticleInfo.quantity}

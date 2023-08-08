@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../services/custom-axios";
 import create from "./http-service";
 
 export default create(import.meta.env.VITE_BACKEND_ORDER_API);

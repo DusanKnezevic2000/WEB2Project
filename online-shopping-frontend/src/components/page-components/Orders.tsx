@@ -1,30 +1,16 @@
-import { useState } from "react";
-import OrderDTO from "../DTO/OrderDTO";
-import Articles from "./Articles";
-import Alert from "./Alert";
+import OrderDTO from "../../DTO/OrderDTO";
+import Articles from "../Articles";
 
 interface Props {
   orders: OrderDTO[];
-  cancelOrder?: (id: number) => void;
-  ordersType: "new" | "previous" | "all";
+  cancelOrder: (id: number) => void;
 }
 
-const Orders = ({ orders, cancelOrder, ordersType }: Props) => {
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-
+const Orders = ({ orders, cancelOrder }: Props) => {
   const isCancellable = (date: string) => {
     const newDate = new Date(date);
     newDate.setHours(newDate.getHours() + 1);
-    if (new Date() < newDate && localStorage.getItem("role") === "Customer") {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  let isDelivered = (date: string) => {
-    const newDate = new Date(date);
-    if (new Date() > newDate) {
+    if (new Date() < newDate) {
       return true;
     } else {
       return false;
@@ -38,9 +24,7 @@ const Orders = ({ orders, cancelOrder, ordersType }: Props) => {
         <div className="row">
           <div className="col-sm-3">
             <div className="container-fluid">
-              {ordersType === "new" && <h3>New Orders</h3>}
-              {ordersType === "previous" && <h3>Previous Orders</h3>}
-              {ordersType === "all" && <h3>Orders</h3>}
+              <h3>Orders</h3>
               <hr />
               <div
                 id="list-example"
@@ -50,14 +34,7 @@ const Orders = ({ orders, cancelOrder, ordersType }: Props) => {
                 {orders.map((order) => (
                   <a
                     key={order.id}
-                    className={
-                      selectedIndex === order.id
-                        ? "list-group-item active"
-                        : "list-group-item"
-                    }
-                    onClick={() => {
-                      setSelectedIndex(order.id);
-                    }}
+                    className="list-group-item list-group-item-action"
                     href={"#list-item-" + order.id}
                   >
                     <p>
@@ -102,17 +79,7 @@ const Orders = ({ orders, cancelOrder, ordersType }: Props) => {
                       Address: {order.address} {" - Price: $"}
                       {order.price}
                     </p>
-                    {order.status === "Cancelled" && (
-                      <Alert color="alert-danger" status={order.status} />
-                    )}
-                    {order.status === "Processing" &&
-                      isDelivered(order.endTime) && (
-                        <Alert color="alert-success" status={"Delivered"} />
-                      )}
-                    {order.status === "Processing" &&
-                      !isDelivered(order.endTime) && (
-                        <Alert color="alert-warning" status={order.status} />
-                      )}
+                    {order.status}
                     {isCancellable(order.startTime) && (
                       <p>
                         <button

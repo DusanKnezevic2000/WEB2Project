@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "../services/custom-axios";
 import apiClient from './api-client';
 
 class VerificationService {

@@ -36,7 +36,6 @@ const Login = () => {
     authService
       .login(data)
       .then((response) => {
-        console.log(response.data);
         localStorage.setItem("id", response.data.id);
         localStorage.setItem("username", response.data.username);
         localStorage.setItem("role", response.data.role);
@@ -55,18 +54,15 @@ const Login = () => {
   };
 
   const googleLogin = (data: any) => {
-    console.log(data);
     const loginInfo = {
       token: data.access_token,
       email: data.email,
       name: data.name,
       picture: data.picture,
     };
-    console.log(loginInfo);
     authService
       .googleLogin(loginInfo)
       .then((response) => {
-        console.log(response.data);
         localStorage.setItem("id", response.data.id);
         localStorage.setItem("username", response.data.username);
         localStorage.setItem("role", response.data.role);

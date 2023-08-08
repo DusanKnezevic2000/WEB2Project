@@ -118,12 +118,9 @@ const Registration = () => {
 
   const handleSubmit = () => {
     if (validateRegister()) {
-      console.log("OK");
-      console.log(registerInfo);
       userService
         .create(registerInfo)
         .then((response) => {
-          console.log(response.data);
           navigate("/login");
           Swal.fire({
             icon: "success",

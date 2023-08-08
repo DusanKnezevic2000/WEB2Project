@@ -1,7 +1,7 @@
 import axios, { CanceledError} from 'axios';
 
 export default axios.create({
-    // headers: {}
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
 })
 
 export { CanceledError }

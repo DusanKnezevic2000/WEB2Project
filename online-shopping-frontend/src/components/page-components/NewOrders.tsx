@@ -25,7 +25,6 @@ const NewOrders = () => {
       request
         .then((response) => {
           setOrders(response.data);
-          console.log(response.data);
         })
         .catch((error) => {
           if (error instanceof CanceledError) return () => cancel;
@@ -37,7 +36,6 @@ const NewOrders = () => {
       request
         .then((response) => {
           setOrders(response.data);
-          console.log(response.data);
         })
         .catch((error) => {
           if (error instanceof CanceledError) return () => cancel;
@@ -49,7 +47,6 @@ const NewOrders = () => {
     orderService
       .delete(id)
       .then((response) => {
-        console.log(response.data);
         setOrders(orders.filter((order) => order.id !== id));
         Swal.fire({
           icon: "success",
@@ -58,7 +55,14 @@ const NewOrders = () => {
           timer: 1500,
         });
       })
-      .catch((error) => console.log(error.response.data));
+      .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Something went wrong.",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      });
   };
 
   return (

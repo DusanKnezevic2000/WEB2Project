@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import OrderDTO from "../../DTO/OrderDTO";
 import { CanceledError } from "../../services/api-client";
 import authGuardService from "../../services/auth-guard-service";
-import orderService, { orderHelpService } from "../../services/order-service";
+import { orderHelpService } from "../../services/order-service";
 import Orders from "../Orders";
 
 const PreviousOrders = () => {
@@ -24,7 +24,6 @@ const PreviousOrders = () => {
       request
         .then((response) => {
           setOrders(response.data);
-          console.log(response.data);
         })
         .catch((error) => {
           if (error instanceof CanceledError) return () => cancel;
@@ -36,7 +35,6 @@ const PreviousOrders = () => {
       request
         .then((response) => {
           setOrders(response.data);
-          console.log(response.data);
         })
         .catch((error) => {
           if (error instanceof CanceledError) return () => cancel;
