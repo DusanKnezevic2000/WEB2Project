@@ -56,5 +56,10 @@ namespace WebShopApp_Business.Service
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
             return _userRepository.Update(user);
         }
+
+        public User UpdateNoPassword(User user)
+        {
+            return _userRepository.Update(user);
+        }
     }
 }

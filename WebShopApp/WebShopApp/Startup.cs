@@ -89,6 +89,8 @@ namespace WebShopApp
 
             app.UseCors();
 
+            app.UseMiddleware<JwtMiddleware>();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

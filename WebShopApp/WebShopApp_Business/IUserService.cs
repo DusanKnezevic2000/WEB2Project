@@ -13,6 +13,7 @@ namespace WebShopApp_Business
         public IEnumerable<User> GetAllUsers();
         public User RegisterUser(User user);
         public User Update(User user);
+        public User UpdateNoPassword(User user);
         public User GetByUsername(string username);
         public User GetByEmail(string email);
     }

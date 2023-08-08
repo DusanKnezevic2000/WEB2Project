@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Threading;
+using WebShopApp.Authorization;
 using WebShopApp_Business;
 using WebShopApp_Business.DTO;
 using WebShopApp_Business.Service;
@@ -14,6 +15,7 @@ namespace WebShopApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ArticleController : Controller
     {
         private readonly IArticleService _articleService;
@@ -45,6 +47,7 @@ namespace WebShopApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Role.Salesman)]
         public IActionResult Post([FromBody] ArticleDTO value)
         {
             try
@@ -61,6 +64,7 @@ namespace WebShopApp.Controllers
 
         // PUT api/<ArticleController>/5
         [HttpPut]
+        [Authorize(Role.Salesman)]
         public IActionResult Put([FromBody] ArticleDTO value)
         {
             try
@@ -87,6 +91,7 @@ namespace WebShopApp.Controllers
 
         // DELETE api/<ArticleController>/5
         [HttpDelete("{id}")]
+        [Authorize(Role.Salesman)]
         public bool Delete(int id)
         {
             try

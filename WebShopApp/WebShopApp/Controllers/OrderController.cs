@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using WebShopApp.Authorization;
 using WebShopApp_Business;
 using WebShopApp_Business.DTO;
 using WebShopApp_Business.Service;
@@ -13,6 +14,7 @@ namespace WebShopApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
@@ -28,6 +30,7 @@ namespace WebShopApp.Controllers
 
         // GET: api/<OrderController>
         [HttpGet]
+        [Authorize(Role.Admin)]
         public IActionResult GetAll()
         {
             try
@@ -50,6 +53,7 @@ namespace WebShopApp.Controllers
 
         // GET: api/<OrderController>
         [HttpGet("[action]/{id}")]
+        [Authorize(Role.Customer)]
         public IActionResult Customer(int id)
         {
             try
@@ -74,6 +78,7 @@ namespace WebShopApp.Controllers
         }
 
         [HttpGet("[action]/{id}")]
+        [Authorize(Role.Salesman)]
         public IActionResult Salesman(int id)
         {
             try
@@ -105,6 +110,7 @@ namespace WebShopApp.Controllers
         }
 
         [HttpGet("customerNew/{id}")]
+        [Authorize(Role.Customer)]
         public IActionResult CustomerNew(int id)
         {
             try
@@ -129,6 +135,7 @@ namespace WebShopApp.Controllers
         }
 
         [HttpGet("salesmanNew/{id}")]
+        [Authorize(Role.Salesman)]
         public IActionResult Salesmannew(int id)
         {
             try
@@ -137,7 +144,7 @@ namespace WebShopApp.Controllers
                 List<Order> orders = _orderService.GetAllWithArticles().ToList();
                 foreach (Order order in orders)
                 {
-                    if (order.EndTime < DateTime.Now && order.StartTime > DateTime.Now && order.Status != OrderStatus.Cancelled)
+                    if (order.EndTime > DateTime.Now && order.StartTime < DateTime.Now && order.Status != OrderStatus.Cancelled)
                     {
                         foreach (ArticleForOrder article in order.Articles)
                         {
@@ -161,6 +168,7 @@ namespace WebShopApp.Controllers
 
         // POST api/<OrderController>
         [HttpPost]
+        [Authorize(Role.Customer)]
         public IActionResult Post(OrderDTO order)
         {
             try {
@@ -174,6 +182,7 @@ namespace WebShopApp.Controllers
 
         // PUT api/<OrderController>/5
         [HttpPut("{id}")]
+        [Authorize(Role.Customer)]
         public Order Put(int id, [FromBody] Order value)
         {
             return _orderService.Update(id, value);
@@ -181,6 +190,7 @@ namespace WebShopApp.Controllers
 
         // DELETE api/<OrderController>/5
         [HttpDelete("{id}")]
+        [Authorize(Role.Customer)]
         public IActionResult Delete(int id)
         {
             try
