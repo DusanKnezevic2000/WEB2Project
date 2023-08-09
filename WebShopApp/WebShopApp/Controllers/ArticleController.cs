@@ -1,10 +1,7 @@
-﻿using FluentResults;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Threading;
 using WebShopApp.Authorization;
 using WebShopApp_Business;
 using WebShopApp_Business.DTO;

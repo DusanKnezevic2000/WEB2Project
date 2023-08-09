@@ -4,13 +4,18 @@ import Articles from "../Articles";
 interface Props {
   orders: OrderDTO[];
   cancelOrder: (id: number) => void;
+  ordersType: "new" | "previous" | "all";
 }
 
-const Orders = ({ orders, cancelOrder }: Props) => {
+const Orders = ({ orders, cancelOrder, ordersType }: Props) => {
   const isCancellable = (date: string) => {
     const newDate = new Date(date);
     newDate.setHours(newDate.getHours() + 1);
-    if (new Date() < newDate) {
+    if (
+      new Date() < newDate &&
+      localStorage.getItem("role") === "Customer" &&
+      ordersType === "new"
+    ) {
       return true;
     } else {
       return false;
@@ -24,7 +29,9 @@ const Orders = ({ orders, cancelOrder }: Props) => {
         <div className="row">
           <div className="col-sm-3">
             <div className="container-fluid">
-              <h3>Orders</h3>
+              {ordersType === "new" && <h3>New Orders</h3>}
+              {ordersType === "previous" && <h3>Previous Orders</h3>}
+              {ordersType === "all" && <h3>Orders</h3>}
               <hr />
               <div
                 id="list-example"

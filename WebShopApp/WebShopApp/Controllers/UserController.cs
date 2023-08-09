@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using BCryptNet = BCrypt.Net.BCrypt;
@@ -9,7 +8,6 @@ using WebShopApp_Data.Models;
 using WebShopApp_Business.DTO;
 using WebShopApp_Business.Service;
 using System.Linq;
-using System.Xml.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
@@ -68,7 +66,7 @@ namespace WebShopApp.Controllers
                         VerificationStatus.Approved
                         ));
                     user = _userService.GetByEmail(info.Email);
-                    return Ok(new LoginResponseDTO(user, info.Token));
+                    return Ok(new LoginResponseDTO(user, _jwtUtils.GenerateJwtToken(user)));
                 }
                 // authentication successful so generate jwt token
                 var jwtToken = _jwtUtils.GenerateJwtToken(user);

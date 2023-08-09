@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 using WebShopApp.Authorization;
 using WebShopApp_Business;
 using WebShopApp_Business.DTO;
